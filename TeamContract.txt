@@ -1,0 +1,27 @@
+Blueberry Norms & Team Contract
+
+-When two or more members disagree:
+Discussion into vote, let every team member give their full perspective on the topic at hand
+
+-When a member is frustrated:
+Take a five minute break, circle back and discuss what’s underlying the frustration/come to an agreement or compromise
+
+-When we merge our work together:
+Have at least one person check the work and (usually) run tests on it. Come together as a group if anyone experiences issues merging
+
+-When do we ask for help:
+(Usually) discuss and try solutions for 30 min, then file a help ticket
+
+-When we pair:
+Keep a tentative schedule, switch upon task completions
+If one person works solo, have at least one other person check their work
+Working outside of class hours:
+Let everyone know in the Slack channel that you’re going to be working and what you plan to work on
+Update the channel on what you got up to when you’re done
+Have someone else check your work before merging
+
+-Stand-up:
+One first thing in the morning to discuss anything important, mainly for deciding who will work on what
+Another stand-up after lunch to discuss where everyone is at on tasks, discuss any major decisions needed to be made, potentially re-delegate tasks, etc.
+Before we finish each day:
+Send a message saying what you worked up to, potential roadblocks you ran into

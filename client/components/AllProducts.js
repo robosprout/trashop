@@ -1,6 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
+import {fetchProducts} from '../store/products'
 // Import Store Thunks
 
 export class AllProducts extends React.Component {

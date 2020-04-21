@@ -150,7 +150,10 @@ async function seed() {
   ])
 
   //Creating 1 cart for now
-  const orders = await Promise.all([Order.create(), Order.create()])
+  const orders = await Promise.all([
+    Order.create({inProgress: false}),
+    Order.create()
+  ])
   //using the 'magic' addProducts method created by the many to many relationship
   await orders[0].addProducts([
     products[0],

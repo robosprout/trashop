@@ -1,9 +1,9 @@
 const router = require('express').Router()
-const {Products} = require('../db/models')
+const {Product} = require('../db/models')
 
 router.get('/', async (req, res, next) => {
   try {
-    const allProducts = await Products.findAll()
+    const allProducts = await Product.findAll()
     res.json(allProducts)
   } catch (error) {
     next(error)
@@ -12,7 +12,7 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const newProduct = await Products.create(req.body)
+    const newProduct = await Product.create(req.body)
     res.json(newProduct)
   } catch (error) {
     next(error)
@@ -21,7 +21,7 @@ router.post('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
-    const singleProduct = await Products.findByPk(req.params.id)
+    const singleProduct = await Product.findByPk(req.params.id)
     res.json(singleProduct)
   } catch (error) {
     next(error)
@@ -30,7 +30,7 @@ router.get('/:id', async (req, res, next) => {
 
 router.put('/:id', async (req, res, next) => {
   try {
-    const updateCampus = await Products.findByPk(req.params.id)
+    const updateCampus = await Product.findByPk(req.params.id)
     await updateCampus.update(req.body)
     res.json(updateCampus)
   } catch (error) {
@@ -40,7 +40,7 @@ router.put('/:id', async (req, res, next) => {
 
 router.delete('/:id', async (req, res, next) => {
   try {
-    await Products.destroy({
+    await Product.destroy({
       where: {
         id: req.params.id
       }
@@ -50,3 +50,5 @@ router.delete('/:id', async (req, res, next) => {
     next(error)
   }
 })
+
+module.exports = router

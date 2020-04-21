@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const {User} = require('../db/models')
+const {User, Order} = require('../db/models')
 module.exports = router
 
 router.get('/', async (req, res, next) => {
@@ -13,5 +13,33 @@ router.get('/', async (req, res, next) => {
     res.json(users)
   } catch (err) {
     next(err)
+  }
+})
+
+router.get('/:userId/orders/', async (req, res, next) => {
+  try {
+    const getOrders = await Order.findAll({
+      where: {
+        userId: req.params.userId
+      }
+    })
+    res.json(getOrders)
+  } catch (error) {
+    next(error)
+  }
+})
+
+//find orders in progress
+router.get('/:userId/cart/', async (req, res, next) => {
+  try {
+    const getCart = await Order.findAll({
+      where: {
+        userId: req.params.userId,
+        inProgress: true
+      }
+    })
+    res.json(getCart)
+  } catch (error) {
+    next(error)
   }
 })

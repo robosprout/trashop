@@ -1,11 +1,32 @@
 import axios from 'axios'
 
 const SET_CART = 'SET_CART'
+const ADD_TO_CART = 'ADD_TO_CART'
 
 export const setCart = cart => ({
   type: SET_CART,
   cart
 })
+
+export const addToCart = product => ({
+  type: ADD_TO_CART,
+  product
+})
+
+export const addProductToCart = (productId, userId = 0) => {
+  return async dispatch => {
+    try {
+      const foundProduct = await axios.get(`/api/products/${productId}`)
+      const addCart = await axios.put(
+        `/api/users/${userId}/cart`,
+        foundProduct.data
+      )
+      dispatch(addToCart(foundProduct.data))
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
 
 export const fetchCart = (userId = 0) => {
   return async dispatch => {
@@ -14,8 +35,12 @@ export const fetchCart = (userId = 0) => {
         dispatch(setCart([]))
       } else {
         const res = await axios.get(`/api/users/${userId}/cart`)
-        console.log(res.data[0])
-        dispatch(setCart(res.data[0]))
+        if (res.data.id) {
+          console.log(res.data[0])
+          dispatch(setCart(res.data[0]))
+        } else {
+          dispatch(setCart([]))
+        }
       }
     } catch (error) {
       console.log(error)
@@ -35,6 +60,9 @@ export default function cartReducer(state = initialState, action) {
         // console.log(newPrice)
         return action.cart
       } else return state
+    }
+    case ADD_TO_CART: {
+      return {...state, products: [...state.products, action.product]}
     }
     default:
       return state

@@ -31,6 +31,16 @@ router.get('/:userId/orders/', async (req, res, next) => {
     next(error)
   }
 })
+router.post('/:userId/cart', async (req, res, next) => {
+  try {
+    const newCart = await Order.create()
+    const user = await User.findByPk(req.params.userId)
+    newCart.setUser(user)
+    res.json(newCart)
+  } catch (error) {
+    next(error)
+  }
+})
 
 router.put('/:userId/cart', async (req, res, next) => {
   try {

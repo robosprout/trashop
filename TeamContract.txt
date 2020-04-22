@@ -25,3 +25,8 @@ One first thing in the morning to discuss anything important, mainly for decidin
 Another stand-up after lunch to discuss where everyone is at on tasks, discuss any major decisions needed to be made, potentially re-delegate tasks, etc.
 Before we finish each day:
 Send a message saying what you worked up to, potential roadblocks you ran into
+
+Roles:
+- TaskMaster: Responsible for updating Project Board and assigning task to members.
+- GitMaster: Responsible for reviewing pull request on github and approving or denying.
+- TestMaster: Responsible for creating a few tests that they think is relevant.

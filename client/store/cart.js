@@ -7,30 +7,34 @@ export const setCart = cart => ({
   cart
 })
 
-export const fetchCart = userId => {
+export const fetchCart = (userId = 0) => {
   return async dispatch => {
     try {
-      const res = await axios.get(`/api/users/${userId}/cart`)
-      dispatch(setCart(res.data))
+      if (userId === 0) {
+        dispatch(setCart([]))
+      } else {
+        const res = await axios.get(`/api/users/${userId}/cart`)
+        console.log(res.data[0])
+        dispatch(setCart(res.data[0]))
+      }
     } catch (error) {
       console.log(error)
     }
   }
 }
 
-const initialState = {
-  cart: [],
-  totalPrice: 0
-}
+const initialState = {}
 
 export default function cartReducer(state = initialState, action) {
   switch (action.type) {
     case SET_CART: {
-      let newPrice = action.cart.products.reduce((acc, cur) => {
-        return acc + cur.price
-      }, 0)
-      console.log(newPrice)
-      return {...state, cart: action.cart, totalPrice: newPrice}
+      if (action.cart.products && action.cart.products.length > 0) {
+        // let newPrice = action.cart.products.reduce((acc, cur) => {
+        //   return acc + cur.price
+        // }, 0)
+        // console.log(newPrice)
+        return action.cart
+      } else return state
     }
     default:
       return state

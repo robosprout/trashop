@@ -149,7 +149,7 @@ async function seed() {
     //
   ])
 
-  //Creating 1 cart for now
+  //Creating 2 cart for now
   const orders = await Promise.all([
     Order.create({inProgress: false}),
     Order.create()
@@ -168,7 +168,7 @@ async function seed() {
   //second order/cart
   // await orders[1].addProducts([products[3],[products[12], [products[1]])
   await orders[1].addProducts([products[2], products[4], products[1]])
-  await orders[1].setUser(users[0])
+  await orders[1].setUser(users[1])
 
   console.log(`seeded ${users.length} users`)
   console.log(`seeded successfully`)

@@ -2,6 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import {auth} from '../store'
+import {Cart} from './Cart'
 
 /**
  * COMPONENT
@@ -11,6 +12,7 @@ const AuthForm = props => {
 
   return (
     <div>
+      <h4>Login or Continue as a Guest</h4>
       <form onSubmit={handleSubmit} name={name}>
         <div>
           <label htmlFor="email">

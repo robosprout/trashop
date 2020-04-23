@@ -31,6 +31,46 @@ router.get('/:userId/orders/', async (req, res, next) => {
     next(error)
   }
 })
+router.post('/:userId/cart', async (req, res, next) => {
+  try {
+    const newCart = await Order.create()
+    const user = await User.findByPk(req.params.userId)
+    newCart.setUser(user)
+    res.json(newCart)
+  } catch (error) {
+    next(error)
+  }
+})
+
+router.put('/:userId/cart', async (req, res, next) => {
+  try {
+    console.log('----->', req.params.userId)
+    const getCart = await Order.findOne({
+      where: {
+        userId: req.params.userId,
+        inProgress: true
+      },
+      include: {
+        model: Product
+      }
+    })
+
+    const foundProduct = await Product.findByPk(req.body.id)
+    await getCart.addProduct(foundProduct)
+    const newCart = await Order.findOne({
+      where: {
+        userId: req.params.userId,
+        inProgress: true
+      },
+      include: {
+        model: Product
+      }
+    })
+    res.json(newCart)
+  } catch (error) {
+    next(error)
+  }
+})
 
 //find orders in progress
 router.get('/:userId/cart/', async (req, res, next) => {

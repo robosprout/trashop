@@ -14,11 +14,12 @@ const Order = db.define('order', {
 })
 
 //class methods/hooks
-// Cart.afterUpdate(async (cartInstance) => {
+// Order.afterUpdate(async (cartInstance) => {
 //   //if there is at least 1 item in the items array
-//   if (cartInstance.items[0]) {
+//   const orders = await cartInstance.getProducts()
+//   if (orders.products[0]) {
 //     //use 'reduce' array method to calculate the total price of items in our items array
-//     return cartInstance.items.reduce((acc, cur) => {
+//     cartInstance.totalPrice = orders.products.reduce((acc, cur) => {
 //       return acc + cur.price
 //     }, 0.00)
 //   } else {

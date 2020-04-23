@@ -23,8 +23,8 @@ export class Cart extends React.Component {
   render() {
     return (
       <div className="cart">
-        {this.props.cart.products && this.props.cart.products.length > 0 ? (
-          this.props.cart.products.map(product => (
+        {this.props.cart && this.props.cart.length > 0 ? (
+          this.props.cart.map(product => (
             <div key={product.name} className="box-wrapper">
               <Link to={`/products/${product.id}`}>{product.name}</Link>
               <img src={product.imageUrl} />

@@ -1,21 +1,33 @@
 import axios from 'axios'
 
 const SET_CART = 'SET_CART'
+const ADD_TO_CART = 'ADD_TO_CART'
 
 export const setCart = cart => ({
   type: SET_CART,
   cart
 })
 
-export const fetchCart = (userId = 0) => {
+export const addToCart = product => ({
+  type: ADD_TO_CART,
+  product
+})
+
+export const addProductToCart = (productId, userId = 0) => {
   return async dispatch => {
     try {
-      if (userId === 0) {
-        dispatch(setCart([]))
+      const foundProduct = await axios.get(`/api/products/${productId}`)
+      if (userId !== 0) {
+        const cart = await axios.get(`/api/users/${userId}/cart`)
+        if (!cart.data.id) {
+          await axios.post(`/api/users/${userId}/cart`)
+          dispatch(setCart([]))
+        }
+
+        await axios.put(`/api/users/${userId}/cart`, foundProduct.data)
+        dispatch(addToCart(foundProduct.data))
       } else {
-        const res = await axios.get(`/api/users/${userId}/cart`)
-        console.log(res.data[0])
-        dispatch(setCart(res.data[0]))
+        dispatch(addToCart(foundProduct.data))
       }
     } catch (error) {
       console.log(error)
@@ -23,18 +35,50 @@ export const fetchCart = (userId = 0) => {
   }
 }
 
-const initialState = {}
+export const fetchCart = (userId = 0) => {
+  return async dispatch => {
+    try {
+      if (userId !== 0) {
+        const res = await axios.get(`/api/users/${userId}/cart`)
+        if (res.data[0].id) {
+          console.log(res.data[0])
+          dispatch(setCart(res.data[0].products))
+        } else {
+          dispatch(setCart([]))
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
+
+export const resetCart = () => {
+  return dispatch => {
+    try {
+      dispatch(setCart([]))
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
+
+// const initialState = {cart: [], product = {}}
+const initialState = []
 
 export default function cartReducer(state = initialState, action) {
   switch (action.type) {
     case SET_CART: {
-      if (action.cart.products && action.cart.products.length > 0) {
+      if (action.cart) {
         // let newPrice = action.cart.products.reduce((acc, cur) => {
         //   return acc + cur.price
         // }, 0)
         // console.log(newPrice)
         return action.cart
       } else return state
+    }
+    case ADD_TO_CART: {
+      return [...state, action.product]
     }
     default:
       return state

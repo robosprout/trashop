@@ -4,6 +4,7 @@ import history from '../history'
 const SET_CART = 'SET_CART'
 const ADD_TO_CART = 'ADD_TO_CART'
 const CHECKOUT = 'CHECKOUT'
+const REMOVE_FROM_CART = 'REMOVE_FROM_CART'
 
 export const setCart = (cart, price) => ({
   type: SET_CART,
@@ -13,6 +14,11 @@ export const setCart = (cart, price) => ({
 
 export const addToCart = product => ({
   type: ADD_TO_CART,
+  product
+})
+
+export const removeFromCart = product => ({
+  type: REMOVE_FROM_CART,
   product
 })
 
@@ -35,6 +41,23 @@ export const addProductToCart = (productId, userId = 0) => {
         dispatch(addToCart(foundProduct.data))
       } else {
         dispatch(addToCart(foundProduct.data))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
+
+export const removeProduct = (productId, userId = 0) => {
+  return async dispatch => {
+    try {
+      const foundProduct = await axios.get(`/api/products/${productId}`)
+      if (userId !== 0) {
+        const cart = await axios.get(`/api/users/${userId}/cart`)
+        await axios.put(`/api/users/${userId}/cart-remove`, foundProduct.data)
+        dispatch(removeFromCart(foundProduct.data))
+      } else {
+        dispatch(removeFromCart(foundProduct.data))
       }
     } catch (error) {
       console.log(error)
@@ -96,6 +119,15 @@ export default function cartReducer(state = initialState, action) {
     case ADD_TO_CART: {
       const newPrice = state.price + action.product.price
       return {...state, cart: [...state.cart, action.product], price: newPrice}
+    }
+    case REMOVE_FROM_CART: {
+      const newPrice = state.price - action.product.price
+      return {
+        ...state,
+        cart: state.cart.filter(product => product.id !== action.product.id),
+        price: newPrice
+      }
+      // return state.filter(product => product.id !== action.product.id);
     }
     case CHECKOUT: {
       return initialState

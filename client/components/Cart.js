@@ -3,6 +3,7 @@ import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {fetchCart, checkoutThunk} from '../store/cart'
 import {me} from '../store'
+import {removeProduct} from '../store/cart'
 // Import Store Thunks
 
 export class Cart extends React.Component {
@@ -27,6 +28,14 @@ export class Cart extends React.Component {
             <div key={product.name} className="box-wrapper">
               <Link to={`/products/${product.id}`}>{product.name}</Link>
               <img src={product.imageUrl} />
+              <button
+                type="button"
+                onClick={() =>
+                  this.props.removeFromCart(product.id, this.props.userId)
+                }
+              >
+                Remove Item
+              </button>
             </div>
           ))
         ) : (
@@ -64,6 +73,9 @@ const mapDispatch = dispatch => {
     getCart: function(userId = 0) {
       console.log(userId)
       dispatch(fetchCart(userId))
+    },
+    removeFromCart: function(productId, userId = 0) {
+      dispatch(removeProduct(productId, userId))
     },
     loadInitialData() {
       dispatch(me())

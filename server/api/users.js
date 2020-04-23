@@ -74,6 +74,28 @@ router.put('/:userId/cart', async (req, res, next) => {
   }
 })
 
+// remove product from cart
+router.put('/:userId/cart-remove/', async (req, res, next) => {
+  try {
+    const getCart = await Order.findOne({
+      where: {
+        userId: req.params.userId,
+        inProgress: true
+      },
+      include: {
+        model: Product
+      }
+    })
+    const foundProduct = await Product.findByPk(req.body.id)
+    await getCart.removeProduct(foundProduct)
+    getCart.totalPrice = getCart.totalPrice - foundProduct.price
+    getCart.save()
+    res.json(getCart)
+  } catch (error) {
+    next(error)
+  }
+})
+
 //find orders in progress
 router.get('/:userId/cart', async (req, res, next) => {
   try {

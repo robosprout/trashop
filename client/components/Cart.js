@@ -23,11 +23,12 @@ export class Cart extends React.Component {
   render() {
     return (
       <div className="cart">
+        <h2>Your Cart</h2>
         {this.props.cart && this.props.cart.length > 0 ? (
           this.props.cart.map(product => (
-            <div key={product.name} className="box-wrapper">
-              <Link to={`/products/${product.id}`}>{product.name}</Link>
+            <div key={product.name} className="cart-item-wrapper">
               <img src={product.imageUrl} />
+              <Link to={`/products/${product.id}`}>{product.name}</Link>
               <button
                 type="button"
                 onClick={() =>

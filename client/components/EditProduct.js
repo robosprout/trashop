@@ -1,6 +1,5 @@
 import React from 'react'
-import {Redirect} from 'react-router-dom'
-import {Link} from 'react-router-dom'
+import {Link, useHistory, Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {addProductThunk} from '../store/singleProduct'
 
@@ -19,7 +18,8 @@ export class EditProduct extends React.Component {
       name: '',
       imageUrl: '',
       description: '',
-      price: ''
+      price: '',
+      redirect: false
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -42,6 +42,7 @@ export class EditProduct extends React.Component {
   }
   handleSubmit = event => {
     event.preventDefault()
+    // const history = useHistory()
     if (this.props.update) this.props.update(this.props.id, this.state)
     else this.props.add(this.state)
     this.setState({
@@ -49,10 +50,21 @@ export class EditProduct extends React.Component {
       name: '',
       imageUrl: '',
       description: '',
-      price: ''
+      price: '',
+      redirect: true
     })
+    //after trying and failing with a <Redirect /> component and
+    //with history, I've gotten the page to reload with the below code
+    //it refreshes the page which may not be ideal, so maybe we can
+    //figure out another way eventually
+    window.location.href = `/products`
+    // history.push('/products')
   }
   render() {
+    // if (this.state.redirect) {
+    //   this.setState({redirect: false});
+    //   return <Redirect to="/products" />
+    // }
     return (
       <form onSubmit={this.handleSubmit}>
         {/* <label>Category:
@@ -115,6 +127,7 @@ export class EditProduct extends React.Component {
 const mapDispatch = dispatch => ({
   add: function(product) {
     dispatch(addProductThunk(product))
+    // dispatch(fetchProducts())
   }
 })
 export default connect(null, mapDispatch)(EditProduct)

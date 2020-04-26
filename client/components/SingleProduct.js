@@ -13,18 +13,31 @@ import {addProductToCart} from '../store/cart'
 export class SingleProduct extends React.Component {
   constructor() {
     super()
-    // this.displayEditForm = this.props.displayEditForm.bind(this)
+    this.displayEditForm = this.displayEditForm.bind(this)
+    this.state = {
+      displayEdit: false
+    }
   }
   componentDidMount() {
     this.props.loadInitialData()
     this.props.getProduct(this.props.match.params.productId)
   }
-  // displayEditForm() {
-  //   this.setState({displayEdit: !this.state.displayEdit})
-  // }
+  displayEditForm() {
+    let currentBool = this.state.displayEdit
+    this.setState({displayEdit: !currentBool})
+  }
   render() {
-    console.log('props in singleproduct render', this.props)
     const {isAdmin, userId} = this.props
+    let editForm = null
+    if (this.state.displayEdit) {
+      editForm = (
+        <EditProduct
+          update={this.props.updateProduct}
+          product={this.props.product}
+          id={this.props.product.id}
+        />
+      )
+    }
     return (
       <div>
         {this.props.product ? (
@@ -49,18 +62,19 @@ export class SingleProduct extends React.Component {
                   Remove Item
                 </button>
               )}
-              {/* {isAdmin && <button
-              type="button"
-              onClick={() =>
-                this.displayEditForm()
-                }>Edit Item</button>} */}
               {isAdmin && (
+                <button type="button" onClick={() => this.displayEditForm()}>
+                  Edit Item
+                </button>
+              )}
+              {editForm}
+              {/* {isAdmin && (
                 <EditProduct
                   update={this.props.updateProduct}
                   product={this.props.product}
                   id={this.props.product.id}
                 />
-              )}
+              )} */}
             </div>
             <div className="singleProductRightBox">
               <h3>{this.props.product.name}</h3>

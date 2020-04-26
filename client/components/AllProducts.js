@@ -6,11 +6,26 @@ import EditProduct from './EditProduct'
 // Import Store Thunks
 
 export class AllProducts extends React.Component {
+  constructor() {
+    super()
+    this.displayEditForm = this.displayEditForm.bind(this)
+    this.state = {
+      displayEdit: false
+    }
+  }
   componentDidMount() {
     this.props.getProducts()
   }
-
+  displayEditForm() {
+    let currentBool = this.state.displayEdit
+    this.setState({displayEdit: !currentBool})
+  }
   render() {
+    let editForm = null
+    const isAdmin = this.props
+    if (this.state.displayEdit) {
+      editForm = <EditProduct />
+    }
     return (
       <div>
         <section className="boxes">
@@ -25,12 +40,12 @@ export class AllProducts extends React.Component {
             <p>No Products to Display</p>
           )}
         </section>
-        {this.props.isAdmin && (
-          <div>
-            <p>Add new Product</p>
-            <EditProduct />
-          </div>
+        {isAdmin && (
+          <button type="button" onClick={() => this.displayEditForm()}>
+            Add New Product
+          </button>
         )}
+        {editForm}
       </div>
     )
   }
@@ -39,7 +54,8 @@ export class AllProducts extends React.Component {
 const mapState = state => {
   return {
     products: state.products,
-    isAdmin: state.user.isAdmin
+    isAdmin: state.user.isAdmin,
+    displayEdit: false
   }
 }
 

@@ -1,7 +1,10 @@
 import React from 'react'
+import {Redirect} from 'react-router-dom'
 import {Link} from 'react-router-dom'
+import {connect} from 'react-redux'
+import {addProductThunk} from '../store/singleProduct'
 
-export default class EditProduct extends React.Component {
+export class EditProduct extends React.Component {
   constructor() {
     super()
     // this.state = {
@@ -39,7 +42,8 @@ export default class EditProduct extends React.Component {
   }
   handleSubmit = event => {
     event.preventDefault()
-    this.props.update(this.props.id, this.state)
+    if (this.props.update) this.props.update(this.props.id, this.state)
+    else this.props.add(this.state)
     this.setState({
       category: '',
       name: '',
@@ -108,3 +112,9 @@ export default class EditProduct extends React.Component {
     )
   }
 }
+const mapDispatch = dispatch => ({
+  add: function(product) {
+    dispatch(addProductThunk(product))
+  }
+})
+export default connect(null, mapDispatch)(EditProduct)

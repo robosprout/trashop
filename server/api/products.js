@@ -13,7 +13,7 @@ router.get('/', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const newProduct = await Product.create(req.body)
-    res.json(newProduct)
+    res.json(newProduct).status(202)
   } catch (error) {
     next(error)
   }

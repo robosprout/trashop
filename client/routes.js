@@ -6,6 +6,7 @@ import {Login, Signup, UserHome} from './components'
 import AllProducts from './components/AllProducts'
 import SingleProduct from './components/SingleProduct'
 import AllUsers from './components/AllUsers'
+import AddProduct from './components/EditProduct'
 import {me} from './store'
 import Cart from './components/Cart'
 
@@ -37,7 +38,10 @@ class Routes extends Component {
             {/* Routes placed here are only available after logging in */}
             <Route path="/home/:userId" component={UserHome} />
             {isAdmin && (
-              <Route path="/users/:userId/allusers" component={AllUsers} />
+              <div>
+                <Route path="/users/:userId/allusers" component={AllUsers} />
+                <Route path="/products/add" component={AddProduct} />
+              </div>
             )}
           </Switch>
         )}

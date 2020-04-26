@@ -2,6 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {fetchProducts} from '../store/products'
+import EditProduct from './EditProduct'
 // Import Store Thunks
 
 export class AllProducts extends React.Component {
@@ -24,6 +25,12 @@ export class AllProducts extends React.Component {
             <p>No Products to Display</p>
           )}
         </section>
+        {this.props.isAdmin && (
+          <div>
+            <p>Add new Product</p>
+            <EditProduct />
+          </div>
+        )}
       </div>
     )
   }
@@ -31,7 +38,8 @@ export class AllProducts extends React.Component {
 
 const mapState = state => {
   return {
-    products: state.products
+    products: state.products,
+    isAdmin: state.user.isAdmin
   }
 }
 

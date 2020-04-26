@@ -4,7 +4,12 @@ module.exports = router
 
 router.get('/:userId/allusers', async (req, res, next) => {
   try {
-    const user = await User.findByPk(`${req.params.userId}`)
+    const user = await User.findOne({
+      where: {
+        email: `${req.user.email}`,
+        id: `${req.user.id}`
+      }
+    })
     if (user.isAdmin) {
       const allusers = await User.findAll({
         attributes: ['id', 'email', 'isAdmin']

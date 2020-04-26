@@ -118,7 +118,20 @@ export default function cartReducer(state = initialState, action) {
     }
     case ADD_TO_CART: {
       const newPrice = state.price + action.product.price
-      return {...state, cart: [...state.cart, action.product], price: newPrice}
+      if (!state.cart.includes(action.product))
+        return {
+          ...state,
+          cart: [...state.cart, action.product],
+          price: newPrice
+        }
+      else {
+        const newCart = state.cart.map(product => {
+          if (product.id === action.product.id)
+            product.itemsInOrder.quantity = product.itemsInOrder.quantity + 1
+          return product
+        })
+        return {...state, cart: newCart, price: newPrice}
+      }
     }
     case REMOVE_FROM_CART: {
       const newPrice = state.price - action.product.price

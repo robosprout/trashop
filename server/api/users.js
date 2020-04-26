@@ -56,7 +56,10 @@ router.put('/:userId/cart', async (req, res, next) => {
     })
 
     const foundProduct = await Product.findByPk(req.body.id)
-    await getCart.addProduct(foundProduct)
+    const order = await getCart.addProduct(foundProduct)
+    if (order === undefined) {
+      return null
+    }
     getCart.totalPrice = getCart.totalPrice + foundProduct.price
     await getCart.save()
     const newCart = await Order.findOne({

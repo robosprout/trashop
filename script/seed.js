@@ -6,7 +6,6 @@ const {User, Product, Order} = require('../server/db/models')
 async function seed() {
   await db.sync({force: true})
   console.log('db synced!')
-
   //10 users in users array, animals/simpsons at email.com/net with password 123
   const users = await Promise.all([
     User.create({email: 'admin@email.com', password: '123', isAdmin: true}),
@@ -21,7 +20,7 @@ async function seed() {
     User.create({email: 'maggie@email.net', password: '123'})
   ])
 
-  //25 items in products array, first 10 are 'trash', then 5 'car', 5 'island' and 5 'town'
+  //15 items in products array, first 10 are 'trash', then 5 'car'
   const products = await Promise.all([
     //10 trash products
     Product.create({
@@ -114,40 +113,28 @@ async function seed() {
       name: 'model t',
       description: 'an old car',
       price: 500000.0
-    }),
-    //5 island products
-    Product.create({
-      category: 'island',
-      name: 'Yurdurshorin',
-      description: 'a small island',
-      price: 5000000.0
-    }),
-    Product.create({
-      category: 'island',
-      name: 'Forturin',
-      description: 'a small island',
-      price: 7000000.0
-    }),
-    Product.create({
-      category: 'island',
-      name: 'Torgur',
-      description: 'a small island',
-      price: 400000.0
-    }),
-    Product.create({
-      category: 'island',
-      name: 'Bornst',
-      description: 'a small island',
-      price: 55000000.0
-    }),
-    Product.create({
-      category: 'island',
-      name: 'Coragorsha',
-      description: 'a big island',
-      price: 10000000.0
     })
-    //
   ])
+  //uncomment lines below for islands
+  // //100 island names
+  // const islandNames = ['Lacinia', 'Amet', 'Neque', 'Sit', 'Platea', 'Aenean', 'Bornst', 'Proin', 'Maecenas', 'Nisi',
+  //   'Facilisi', 'Orci', 'Coragorsha', 'Aliquet', 'Forturin', 'Lacus', 'Anter', 'Erot', 'Sem', 'Nullam',
+  //   'Ligula', 'Bibenda', 'Vestir', 'Kinnier', 'Capelen', 'Magawen', 'Clampe', 'Raintos', 'Yurdurshorin', 'Dabel',
+  //   'Charier', 'Zamoro', 'Torgur', 'Otanison', 'Dewber', 'Peele', 'Atteno', 'Gymnopede', 'Suncurop', 'Sedge',
+  //   'Moebius', 'Laoreet', 'Cosequa', 'Dapidus', 'Donece', 'Blanditir', 'Magna', 'Baulk', 'Flemmich', 'Vischi',
+  //   'Rubinsnow', 'Montreip', 'Essling', 'Laiana', 'Rubusmiche', 'Hypearifas', 'Elymus', 'Neptunia', 'Perstrata', 'Castilleja',
+  //   'Heckard', 'Trifolis', 'Subtarnahan', 'Yannihern', 'Zohary', 'Ceanotip', 'Camisso', 'Fertifor', 'Lamotium', 'Nevadanse',
+  //   'Coultro', 'Paraiso', 'Carex', 'Trisperawam', 'Charteris', 'Riddlesden', 'Curusu', 'Loborisi', 'Estviva', 'Quissi',
+  //   'Chartero', 'Leschero', 'Webeimper', 'Kinlo', 'Keplero', 'Wando', 'Habin', 'Donarnahan', 'Zuanish', 'Elcoate',
+  //   'Finnimor', 'Palapalai', 'Bluntleve', 'Milgrimmia', 'Galapine', 'Mircobu', 'Dittany', 'Hackelia', 'Douglassi', 'Clusania']
+  // //creating a product for each island with a random price and random photo of 25 island photos in public folder
+  // islandNames.forEach(async island => {
+  //   let price = Math.floor(Math.random() * 100000000) + Math.floor(Math.random() * 100) / 100
+  //   let photoNum = Math.ceil(Math.random() * 25)
+  //   await Product.create({category: 'island', name: island,
+  //   imageUrl: `/islandPhotos/${photoNum}.jpeg`, price: price})
+  // })
+  //
 
   //Creating 2 cart for now
   const orders = await Promise.all([

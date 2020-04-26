@@ -30,9 +30,10 @@ router.get('/:id', async (req, res, next) => {
 
 router.put('/:id', async (req, res, next) => {
   try {
-    const updateCampus = await Product.findByPk(req.params.id)
-    await updateCampus.update(req.body)
-    res.json(updateCampus)
+    const product = await Product.findByPk(req.params.id)
+    await product.update(req.body)
+    // res.json(product)
+    res.sendStatus(202)
   } catch (error) {
     next(error)
   }
@@ -45,7 +46,8 @@ router.delete('/:id', async (req, res, next) => {
         id: req.params.id
       }
     })
-    res.status(204).end()
+    // res.status(204).end()
+    res.send('Product successfully deleted').status(204)
   } catch (error) {
     next(error)
   }

@@ -31,9 +31,9 @@ const User = db.define('user', {
     type: Sequelize.BOOLEAN,
     defaultValue: false
   },
-  image: {
+  imageUrl: {
     type: Sequelize.STRING
-  },
+  }
 })
 
 module.exports = User

@@ -228,6 +228,7 @@ async function seed() {
       price: price
     })
   })
+
   //Creating 2 cart for now
   const orders = await Promise.all([
     Order.create({inProgress: false}),

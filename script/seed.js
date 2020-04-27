@@ -1,8 +1,6 @@
 'use strict'
-
 const db = require('../server/db')
 const {User, Product, Order} = require('../server/db/models')
-
 async function seed() {
   await db.sync({force: true})
   console.log('db synced!')
@@ -19,7 +17,6 @@ async function seed() {
     User.create({email: 'marge@email.net', password: '123'}),
     User.create({email: 'maggie@email.net', password: '123'})
   ])
-
   //15 items in products array, first 10 are 'trash', then 5 'car'
   const products = await Promise.all([
     //10 trash products
@@ -253,19 +250,16 @@ async function seed() {
     products[8].price
   await orders[0].save()
   //if this works like I think it should, now our user 'admin@email.com' will have one cart with 5 items in it
-
   //second order/cart
   // await orders[1].addProducts([products[3],[products[12], [products[1]])
   await orders[1].addProducts([products[2], products[4], products[1]])
   await orders[1].setUser(users[1])
-
   orders[1].totalPrice =
     products[2].price + products[4].price + products[1].price
   await orders[1].save()
   console.log(`seeded ${users.length} users`)
   console.log(`seeded successfully`)
 }
-
 // We've separated the `seed` function from the `runSeed` function.
 // This way we can isolate the error handling and exit trapping.
 // The `seed` function is concerned only with modifying the database.
@@ -282,13 +276,11 @@ async function runSeed() {
     console.log('db connection closed')
   }
 }
-
 // Execute the `seed` function, IF we ran this module directly (`node seed`).
 // `Async` functions always return a promise, so we can use `catch` to handle
 // any errors that might occur inside of `seed`.
 if (module === require.main) {
   runSeed()
 }
-
 // we export the seed function for testing purposes (see `./seed.spec.js`)
 module.exports = seed

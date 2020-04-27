@@ -12,10 +12,10 @@ export const setCart = (cart, price) => ({
   price
 })
 
-export const addToCart = (product, isLoggedIn) => ({
+export const addToCart = (product, loggedIn) => ({
   type: ADD_TO_CART,
   product,
-  isLoggedIn
+  loggedIn
 })
 
 export const removeFromCart = product => ({
@@ -30,17 +30,15 @@ export const checkout = () => ({
 export const addProductToCart = (productId, userId = 0) => {
   return async dispatch => {
     try {
-      const foundProduct = await axios.get(`/api/products/${productId}`)
       if (userId !== 0) {
-        const cart = await axios.get(`/api/users/${userId}/cart`)
-        if (!cart.data[0]) {
-          await axios.post(`/api/users/${userId}/cart`)
-          dispatch(setCart([], 0))
-        }
-        await axios.put(`/api/users/${userId}/cart`, foundProduct.data)
-        dispatch(addToCart(foundProduct.data, true))
+        const newProduct = await axios.put(`/api/users/${userId}/cart`, {
+          productId: productId
+        })
+        console.log(newProduct.data)
+        dispatch(addToCart(newProduct.data, true))
       } else {
-        dispatch(addToCart(foundProduct.data, false))
+        const newProduct = await axios.get(`/api/products/${productId}`)
+        dispatch(addToCart(newProduct.data, false))
       }
     } catch (error) {
       console.log(error)
@@ -70,9 +68,9 @@ export const fetchCart = (userId = 0) => {
     try {
       if (userId !== 0) {
         const res = await axios.get(`/api/users/${userId}/cart`)
-        if (res.data[0] && res.data[0].id) {
-          console.log(res.data[0])
-          dispatch(setCart(res.data[0].products, res.data[0].totalPrice))
+        if (res.data && res.data.id) {
+          console.log(res.data)
+          dispatch(setCart(res.data.products, res.data.totalPrice))
         } else {
           dispatch(setCart([], 0))
         }
@@ -120,36 +118,37 @@ export default function cartReducer(state = initialState, action) {
       const newPrice = state.price + action.product.price
       let newProduct = true
       state.cart.forEach(product => {
-        console.log('newProd id', action.product.id)
-        console.log('product id', product.id)
         if (product.id === action.product.id) newProduct = false
-        console.log(newProduct)
       })
       if (newProduct) {
         console.log('adding product')
-        return {
-          ...state,
-          cart: [...state.cart, action.product],
-          price: newPrice
+        if (action.loggedIn) {
+          return {
+            ...state,
+            cart: [...state.cart, action.product],
+            price: newPrice
+          }
+        } else {
+          action.product.itemsInOrder = {}
+          action.product.itemsInOrder.quantity = 1
+          return {
+            ...state,
+            cart: [...state.cart, action.product],
+            price: newPrice
+          }
         }
-      } else if (action.isLoggedIn) {
-        console.log('updating quant')
-        const newCart = state.cart.map(product => {
-          if (product.id === action.product.id)
-            product.itemsInOrder.quantity = product.itemsInOrder.quantity + 1
-          return product
-        })
-        return {...state, cart: newCart, price: newPrice}
       } else {
         console.log('updating quant')
+        let thruCheck = true
         const newCart = state.cart.map(product => {
-          const thruCheck = !!product.itemsInOrder
           if (product.id === action.product.id) {
-            if (!thruCheck) {
+            thruCheck = !!product.itemsInOrder
+            if (thruCheck)
+              product.itemsInOrder.quantity = product.itemsInOrder.quantity + 1
+            else {
               product.itemsInOrder = {}
               product.itemsInOrder.quantity = 2
-            } else
-              product.itemsInOrder.quantity = product.itemsInOrder.quantity + 1
+            }
           }
           return product
         })

@@ -8,7 +8,7 @@ import {
 } from '../store/singleProduct'
 import {me} from '../store'
 import EditProduct from './EditProduct'
-import {addProductToCart} from '../store/cart'
+import {addProductToCart, fetchCart} from '../store/cart'
 
 export class SingleProduct extends React.Component {
   constructor() {

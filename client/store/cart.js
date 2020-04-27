@@ -12,9 +12,10 @@ export const setCart = (cart, price) => ({
   price
 })
 
-export const addToCart = product => ({
+export const addToCart = (product, loggedIn) => ({
   type: ADD_TO_CART,
-  product
+  product,
+  loggedIn
 })
 
 export const removeFromCart = product => ({
@@ -34,10 +35,10 @@ export const addProductToCart = (productId, userId = 0) => {
           productId: productId
         })
         console.log(newProduct.data)
-        dispatch(addToCart(newProduct.data))
+        dispatch(addToCart(newProduct.data, true))
       } else {
         const newProduct = await axios.get(`/api/products/${productId}`)
-        dispatch(addToCart(newProduct.data))
+        dispatch(addToCart(newProduct.data, false))
       }
     } catch (error) {
       console.log(error)
@@ -121,10 +122,20 @@ export default function cartReducer(state = initialState, action) {
       })
       if (newProduct) {
         console.log('adding product')
-        return {
-          ...state,
-          cart: [...state.cart, action.product],
-          price: newPrice
+        if (action.loggedIn) {
+          return {
+            ...state,
+            cart: [...state.cart, action.product],
+            price: newPrice
+          }
+        } else {
+          action.product.itemsInOrder = {}
+          action.product.itemsInOrder.quantity = 1
+          return {
+            ...state,
+            cart: [...state.cart, action.product],
+            price: newPrice
+          }
         }
       } else {
         console.log('updating quant')

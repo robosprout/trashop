@@ -47,7 +47,9 @@ export class Cart extends React.Component {
                   <select
                     name="item-quantity"
                     id="quantity"
-                    value={product.itemsInOrder.quantity}
+                    value={
+                      this.props.isLoggedIn ? product.itemsInOrder.quantity : 1
+                    }
                   >
                     <option value="1">1</option>
                     <option value="2">2</option>

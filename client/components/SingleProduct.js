@@ -46,8 +46,13 @@ export class SingleProduct extends React.Component {
               <img src={this.props.product.imageUrl} />
               <button
                 type="button"
-                onClick={() =>
-                  this.props.addToCart(this.props.product.id, userId)
+                onClick={this.props.isLoggedIn
+                  ? () =>
+                      this.props.addToCart(
+                        this.props.product.id,
+                        this.props.userId
+                      )
+                  : () => this.props.addToCart(this.props.product.id, 0)
                 }
               >
                 Add to Cart
@@ -85,6 +90,7 @@ export class SingleProduct extends React.Component {
         ) : (
           <p>Can't find that product - Check back later</p>
         )}
+
       </div>
     )
   }
@@ -96,6 +102,8 @@ const mapState = state => {
     displayEdit: false,
     userId: state.user.id,
     isAdmin: state.user.isAdmin
+    isLoggedIn: !!state.user.id
+
   }
 }
 

@@ -12,9 +12,10 @@ export const setCart = (cart, price) => ({
   price
 })
 
-export const addToCart = product => ({
+export const addToCart = (product, isLoggedIn) => ({
   type: ADD_TO_CART,
-  product
+  product,
+  isLoggedIn
 })
 
 export const removeFromCart = product => ({
@@ -37,9 +38,9 @@ export const addProductToCart = (productId, userId = 0) => {
           dispatch(setCart([], 0))
         }
         await axios.put(`/api/users/${userId}/cart`, foundProduct.data)
-        dispatch(addToCart(foundProduct.data))
+        dispatch(addToCart(foundProduct.data, true))
       } else {
-        dispatch(addToCart(foundProduct.data))
+        dispatch(addToCart(foundProduct.data, false))
       }
     } catch (error) {
       console.log(error)
@@ -131,11 +132,25 @@ export default function cartReducer(state = initialState, action) {
           cart: [...state.cart, action.product],
           price: newPrice
         }
-      } else {
+      } else if (action.isLoggedIn) {
         console.log('updating quant')
         const newCart = state.cart.map(product => {
           if (product.id === action.product.id)
             product.itemsInOrder.quantity = product.itemsInOrder.quantity + 1
+          return product
+        })
+        return {...state, cart: newCart, price: newPrice}
+      } else {
+        console.log('updating quant')
+        const newCart = state.cart.map(product => {
+          const thruCheck = !!product.itemsInOrder
+          if (product.id === action.product.id) {
+            if (!thruCheck) {
+              product.itemsInOrder = {}
+              product.itemsInOrder.quantity = 2
+            } else
+              product.itemsInOrder.quantity = product.itemsInOrder.quantity + 1
+          }
           return product
         })
         return {...state, cart: newCart, price: newPrice}

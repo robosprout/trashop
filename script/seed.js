@@ -150,6 +150,12 @@ async function seed() {
   ])
   //using the 'magic' setUser method created by the one to one relationship between Cart and User
   await orders[0].setUser(users[0])
+  orders[0].totalPrice =
+    products[0].price +
+    products[1].price +
+    products[2].price +
+    products[8].price
+  await orders[0].save()
   //if this works like I think it should, now our user 'admin@email.com' will have one cart with 5 items in it
 
   //second order/cart
@@ -157,6 +163,9 @@ async function seed() {
   await orders[1].addProducts([products[2], products[4], products[1]])
   await orders[1].setUser(users[1])
 
+  orders[1].totalPrice =
+    products[2].price + products[4].price + products[1].price
+  await orders[1].save()
   console.log(`seeded ${users.length} users`)
   console.log(`seeded successfully`)
 }

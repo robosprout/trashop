@@ -37,7 +37,7 @@ router.get('/', async (req, res, next) => {
   }
 })
 
-router.get('/:userId/orders/', async (req, res, next) => {
+router.get('/:userId/orders', async (req, res, next) => {
   try {
     const getOrders = await Order.findAll({
       where: {
@@ -78,6 +78,8 @@ router.put('/:userId/cart', async (req, res, next) => {
 
     const foundProduct = await Product.findByPk(req.body.id)
     await getCart.addProduct(foundProduct)
+    getCart.totalPrice = getCart.totalPrice + foundProduct.price
+    await getCart.save()
     const newCart = await Order.findOne({
       where: {
         userId: req.params.userId,
@@ -93,8 +95,30 @@ router.put('/:userId/cart', async (req, res, next) => {
   }
 })
 
+// remove product from cart
+router.put('/:userId/cart-remove/', async (req, res, next) => {
+  try {
+    const getCart = await Order.findOne({
+      where: {
+        userId: req.params.userId,
+        inProgress: true
+      },
+      include: {
+        model: Product
+      }
+    })
+    const foundProduct = await Product.findByPk(req.body.id)
+    await getCart.removeProduct(foundProduct)
+    getCart.totalPrice = getCart.totalPrice - foundProduct.price
+    getCart.save()
+    res.json(getCart)
+  } catch (error) {
+    next(error)
+  }
+})
+
 //find orders in progress
-router.get('/:userId/cart/', async (req, res, next) => {
+router.get('/:userId/cart', async (req, res, next) => {
   try {
     const getCart = await Order.findAll({
       where: {
@@ -106,6 +130,26 @@ router.get('/:userId/cart/', async (req, res, next) => {
       }
     })
     res.json(getCart)
+  } catch (error) {
+    next(error)
+  }
+})
+
+router.put('/:userId/checkout', async (req, res, next) => {
+  try {
+    const order = await Order.findAll({
+      where: {
+        userId: req.params.userId,
+        inProgress: true
+      },
+      include: {
+        model: Product
+      }
+    })
+    order[0].inProgress = false
+
+    await order[0].save()
+    res.sendStatus(204)
   } catch (error) {
     next(error)
   }

@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import axios from 'axios'
 import history from '../history'
 
@@ -5,6 +6,7 @@ const SET_CART = 'SET_CART'
 const ADD_TO_CART = 'ADD_TO_CART'
 const CHECKOUT = 'CHECKOUT'
 const REMOVE_FROM_CART = 'REMOVE_FROM_CART'
+const UPDATE_QUANTITY = 'UPDATE_QUANTITY'
 
 export const setCart = (cart, price) => ({
   type: SET_CART,
@@ -27,6 +29,12 @@ export const checkout = () => ({
   type: CHECKOUT
 })
 
+export const updateQuantity = (productId, quantity) => ({
+  type: UPDATE_QUANTITY,
+  productId,
+  quantity
+})
+
 export const addProductToCart = (productId, userId = 0) => {
   return async dispatch => {
     try {
@@ -34,11 +42,29 @@ export const addProductToCart = (productId, userId = 0) => {
         const newProduct = await axios.put(`/api/users/${userId}/cart`, {
           productId: productId
         })
-        console.log(newProduct.data)
         dispatch(addToCart(newProduct.data, true))
       } else {
         const newProduct = await axios.get(`/api/products/${productId}`)
         dispatch(addToCart(newProduct.data, false))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
+
+export const updateQuantityThunk = (productId, userId = 0, quantity) => {
+  return async dispatch => {
+    try {
+      if (userId !== 0) {
+        await axios.put(`/api/users/${userId}/cart-update`, {
+          productId: productId,
+          quantity: quantity
+        })
+
+        dispatch(updateQuantity(productId, quantity))
+      } else {
+        dispatch(updateQuantity(productId, quantity))
       }
     } catch (error) {
       console.log(error)
@@ -171,6 +197,21 @@ export default function cartReducer(state = initialState, action) {
     }
     case CHECKOUT: {
       return initialState
+    }
+    case UPDATE_QUANTITY: {
+      let change
+      let price
+      const newCart = state.cart.map(product => {
+        if (product.id === action.productId) {
+          change = action.quantity - product.itemsInOrder.quantity
+          price = product.price
+          product.itemsInOrder.quantity = action.quantity
+        }
+        return product
+      })
+      console.log(newCart)
+      const newPrice = state.price + price * change
+      return {...state, cart: newCart, price: newPrice}
     }
     default:
       return state

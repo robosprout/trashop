@@ -36,7 +36,6 @@ export const addProductToCart = (productId, userId = 0) => {
           await axios.post(`/api/users/${userId}/cart`)
           dispatch(setCart([], 0))
         }
-
         await axios.put(`/api/users/${userId}/cart`, foundProduct.data)
         dispatch(addToCart(foundProduct.data))
       } else {
@@ -118,13 +117,22 @@ export default function cartReducer(state = initialState, action) {
     }
     case ADD_TO_CART: {
       const newPrice = state.price + action.product.price
-      if (!state.cart.includes(action.product))
+      let newProduct = true
+      state.cart.forEach(product => {
+        console.log('newProd id', action.product.id)
+        console.log('product id', product.id)
+        if (product.id === action.product.id) newProduct = false
+        console.log(newProduct)
+      })
+      if (newProduct) {
+        console.log('adding product')
         return {
           ...state,
           cart: [...state.cart, action.product],
           price: newPrice
         }
-      else {
+      } else {
+        console.log('updating quant')
         const newCart = state.cart.map(product => {
           if (product.id === action.product.id)
             product.itemsInOrder.quantity = product.itemsInOrder.quantity + 1
@@ -134,7 +142,12 @@ export default function cartReducer(state = initialState, action) {
       }
     }
     case REMOVE_FROM_CART: {
-      const newPrice = state.price - action.product.price
+      let quantity
+      state.cart.forEach(product => {
+        if (product.id === action.product.id)
+          quantity = product.itemsInOrder.quantity
+      })
+      const newPrice = state.price - action.product.price * quantity
       return {
         ...state,
         cart: state.cart.filter(product => product.id !== action.product.id),

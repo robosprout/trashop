@@ -47,7 +47,11 @@ export class Cart extends React.Component {
                 </button>
                 <div className="edit-quantity">
                   <label htmlFor="quantity">Quantity:</label>
-                  <select name="item-quantity" id="quantity">
+                  <select
+                    name="item-quantity"
+                    id="quantity"
+                    value={product.itemsInOrder.quantity}
+                  >
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>

@@ -30,9 +30,6 @@ export class Cart extends React.Component {
       <div className="cart">
         {this.props.cart && this.props.cart.length > 0 ? (
           this.props.cart.map(product => {
-            console.log('product:', product)
-            console.log('itemsInOrder:', product.itemsInOrder.quantity)
-
             return (
               <div key={product.name} className="box-wrapper">
                 <Link to={`/products/${product.id}`}>{product.name}</Link>
@@ -50,7 +47,9 @@ export class Cart extends React.Component {
                   <select
                     name="item-quantity"
                     id="quantity"
-                    value={product.itemsInOrder.quantity}
+                    value={
+                      this.props.isLoggedIn ? product.itemsInOrder.quantity : 1
+                    }
                   >
                     <option value="1">1</option>
                     <option value="2">2</option>

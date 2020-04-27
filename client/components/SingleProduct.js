@@ -25,8 +25,14 @@ export class SingleProduct extends React.Component {
             <img src={this.props.product.imageUrl} />
             <button
               type="button"
-              onClick={() =>
-                this.props.addToCart(this.props.product.id, this.props.userId)
+              onClick={
+                this.props.isLoggedIn
+                  ? () =>
+                      this.props.addToCart(
+                        this.props.product.id,
+                        this.props.userId
+                      )
+                  : () => this.props.addToCart(this.props.product.id, 0)
               }
             >
               Add to Cart
@@ -45,7 +51,8 @@ export class SingleProduct extends React.Component {
 const mapState = state => {
   return {
     product: state.product,
-    userId: state.user.id
+    userId: state.user.id,
+    isLoggedIn: !!state.user.id
   }
 }
 

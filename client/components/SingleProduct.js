@@ -19,10 +19,14 @@ export class SingleProduct extends React.Component {
   render() {
     console.log(this.props)
     return (
-      <div>
+      <div className="singleProduct-cont">
         <section className="singleProduct">
           <div className="singleProductLeftBox">
             <img src={this.props.product.imageUrl} />
+          </div>
+          <div className="singleProductRightBox">
+            <h3>{this.props.product.name}</h3>
+            <p>{this.props.product.description}</p>
             <button
               type="button"
               onClick={() =>
@@ -31,10 +35,6 @@ export class SingleProduct extends React.Component {
             >
               Add to Cart
             </button>
-          </div>
-          <div className="singleProductRightBox">
-            <h3>{this.props.product.name}</h3>
-            <p>{this.props.product.description}</p>
           </div>
         </section>
       </div>

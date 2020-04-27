@@ -53,7 +53,7 @@ export class SingleProduct extends React.Component {
                           this.props.product.id,
                           this.props.userId
                         )
-                    : () => this.props.addToCart(this.props.product.id, 0)
+                    : () => addToGuestCart(this.props.product)
                 }
               >
                 Add to Cart
@@ -96,6 +96,18 @@ export class SingleProduct extends React.Component {
   }
 }
 
+function addToGuestCart(product) {
+  const guestCart = JSON.parse(localStorage.getItem('guestCart'))
+  if (guestCart[product.id]) {
+    guestCart[product.id].quantity++
+  } else {
+    guestCart[product.id] = product
+    guestCart[product.id].quantity = 1
+  }
+
+  localStorage.setItem('guestCart', JSON.stringify(guestCart))
+  console.log('----->', JSON.parse(localStorage.getItem('guestCart')))
+}
 const mapState = state => {
   return {
     product: state.product,

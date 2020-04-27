@@ -66,14 +66,25 @@ export const removeProduct = (productId, userId = 0) => {
 export const fetchCart = (userId = 0) => {
   return async dispatch => {
     try {
+      //logged in user
       if (userId !== 0) {
         const res = await axios.get(`/api/users/${userId}/cart`)
         if (res.data && res.data.id) {
           console.log(res.data)
           dispatch(setCart(res.data.products, res.data.totalPrice))
-        } else {
-          dispatch(setCart([], 0))
         }
+      } else {
+        //guest user
+        //turn localStorage(object) into array
+        const guestCart = JSON.parse(localStorage.getItem('guestCart'))
+        let guestCartArray = []
+        let totalPrice = 0
+        for (let key in guestCart) {
+          guestCartArray.push(guestCart[key])
+          totalPrice += guestCart[key].price * guestCart[key].quantity
+        }
+        console.log(guestCartArray, totalPrice)
+        dispatch(setCart(guestCartArray, totalPrice))
       }
     } catch (error) {
       console.log(error)

@@ -1,0 +1,10 @@
+diff a/server/api/users.js b/server/api/users.js	(rejected hunks)
+@@ -7,3 +7,5 @@ router.get('/:userId/allusers', async (req, res, next) => {
+-    const user = await User.findOne({where:
+-      {email: `${req.user.email}`,
+-      id: `${req.user.id}`}
++    const user = await User.findOne({
++      where: {
++        email: `${req.user.email}`,
++        id: `${req.user.id}`
++      }

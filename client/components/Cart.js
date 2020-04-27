@@ -28,21 +28,21 @@ export class Cart extends React.Component {
   render() {
     return (
       <div className="cart">
+        <h2>Your Cart</h2>
         {this.props.cart && this.props.cart.length > 0 ? (
-          this.props.cart.map(product => {
-            return (
-              <div key={product.name} className="box-wrapper">
-                <Link to={`/products/${product.id}`}>{product.name}</Link>
-                <img src={product.imageUrl} />
-                <button
-                  type="button"
-                  onClick={() =>
-                    this.props.removeFromCart(product.id, this.props.userId)
-                  }
-                >
-                  Remove Item
-                </button>
-                <div className="edit-quantity">
+          this.props.cart.map(product => (
+            <div key={product.name} className="cart-item-wrapper">
+              <img src={product.imageUrl} />
+              <Link to={`/products/${product.id}`}>{product.name}</Link>
+              <button
+                type="button"
+                onClick={() =>
+                  this.props.removeFromCart(product.id, this.props.userId)
+                }
+              >
+                Remove Item
+              </button>
+              <div className="edit-quantity">
                   <label htmlFor="quantity">Quantity:</label>
                   <select
                     name="item-quantity"
@@ -63,9 +63,9 @@ export class Cart extends React.Component {
                     <option value="10">10</option>
                   </select>
                 </div>
-              </div>
-            )
-          })
+            </div>
+          ))
+
         ) : (
           <p>Your cart is empty!</p>
         )}

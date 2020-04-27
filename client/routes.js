@@ -5,6 +5,8 @@ import PropTypes from 'prop-types'
 import {Login, Signup, UserHome} from './components'
 import AllProducts from './components/AllProducts'
 import SingleProduct from './components/SingleProduct'
+import AllUsers from './components/AllUsers'
+import AddProduct from './components/EditProduct'
 import {me} from './store'
 import Cart from './components/Cart'
 import {Checkout} from './components/Checkout'
@@ -18,26 +20,38 @@ class Routes extends Component {
   }
 
   render() {
-    const {isLoggedIn} = this.props
+    const {isLoggedIn, isAdmin} = this.props
 
     return (
-      <Switch>
-        {/* Routes placed here are available to all visitors */}
-        <Route path="/login" component={Login} />
-        <Route path="/signup" component={Signup} />
-        <Route exact path="/products" component={AllProducts} />
-        <Route path="/products/:productId" component={SingleProduct} />
-        <Route exact path="/cart" component={Cart} />
-        <Route exact path="/checkout" component={Checkout} />
-        {isLoggedIn && (
-          <Switch>
-            {/* Routes placed here are only available after logging in */}
-            <Route path="/home/:userId" component={UserHome} />
-          </Switch>
-        )}
-        {/* Displays our Login component as a fallback */}
-        <Route component={Login} />
-      </Switch>
+      <div className="product-cont">
+        <Switch>
+          {/* Routes placed here are available to all visitors */}
+          <Route path="/login" component={Login} />
+          <Route path="/signup" component={Signup} />
+          <Route exact path="/products" component={AllProducts} />
+          <Route
+            path="/products/:productId"
+            component={SingleProduct}
+            isAdmin={isAdmin}
+          />
+          <Route exact path="/cart" component={Cart} />
+          <Route exact path="/checkout" component={Checkout} />
+          {isLoggedIn && (
+            <Switch>
+              {/* Routes placed here are only available after logging in */}
+              <Route path="/home/:userId" component={UserHome} />
+              {isAdmin && (
+                <div>
+                  <Route path="/users/:userId/allusers" component={AllUsers} />
+                  <Route path="/products/add" component={AddProduct} />
+                </div>
+              )}
+            </Switch>
+          )}
+          {/* Displays our Login component as a fallback */}
+          <Route component={Login} />
+        </Switch>
+       </div>
     )
   }
 }
@@ -49,7 +63,8 @@ const mapState = state => {
   return {
     // Being 'logged in' for our purposes will be defined has having a state.user that has a truthy id.
     // Otherwise, state.user will be an empty object, and state.user.id will be falsey
-    isLoggedIn: !!state.user.id
+    isLoggedIn: !!state.user.id,
+    isAdmin: state.user.isAdmin
   }
 }
 

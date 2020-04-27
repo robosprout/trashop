@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const {Product} = require('../db/models')
+const {User, Product} = require('../db/models')
 
 router.get('/', async (req, res, next) => {
   try {
@@ -12,8 +12,16 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const newProduct = await Product.create(req.body)
-    res.json(newProduct)
+    const user = await User.findOne({
+      where: {
+        email: `${req.user.email}`,
+        id: `${req.user.id}`
+      }
+    })
+    if (req.user.isAdmin) {
+      const newProduct = await Product.create(req.body)
+      res.json(newProduct).status(202)
+    }
   } catch (error) {
     next(error)
   }
@@ -30,9 +38,19 @@ router.get('/:id', async (req, res, next) => {
 
 router.put('/:id', async (req, res, next) => {
   try {
-    const updateCampus = await Product.findByPk(req.params.id)
-    await updateCampus.update(req.body)
-    res.json(updateCampus)
+    const user = await User.findOne({
+      where: {
+        email: `${req.user.email}`,
+        id: `${req.user.id}`
+      }
+    })
+    console.log('USER>>>', user)
+    if (user.isAdmin) {
+      const product = await Product.findByPk(req.params.id)
+      await product.update(req.body)
+      res.sendStatus(202)
+      // res.json(product)
+    }
   } catch (error) {
     next(error)
   }
@@ -40,12 +58,21 @@ router.put('/:id', async (req, res, next) => {
 
 router.delete('/:id', async (req, res, next) => {
   try {
-    await Product.destroy({
+    const user = await User.findOne({
       where: {
-        id: req.params.id
+        email: `${req.user.email}`,
+        id: `${req.user.id}`
       }
     })
-    res.status(204).end()
+    if (user.isAdmin) {
+      await Product.destroy({
+        where: {
+          id: req.params.id
+        }
+      })
+    }
+    // res.status(204).end()
+    res.send('Product successfully deleted').status(204)
   } catch (error) {
     next(error)
   }

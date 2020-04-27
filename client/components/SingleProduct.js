@@ -8,7 +8,7 @@ import {
 } from '../store/singleProduct'
 import {me} from '../store'
 import EditProduct from './EditProduct'
-import {addProductToCart} from '../store/cart'
+import {addProductToCart, fetchCart} from '../store/cart'
 
 export class SingleProduct extends React.Component {
   constructor() {
@@ -46,13 +46,14 @@ export class SingleProduct extends React.Component {
               <img src={this.props.product.imageUrl} />
               <button
                 type="button"
-                onClick={this.props.isLoggedIn
-                  ? () =>
-                      this.props.addToCart(
-                        this.props.product.id,
-                        this.props.userId
-                      )
-                  : () => this.props.addToCart(this.props.product.id, 0)
+                onClick={
+                  this.props.isLoggedIn
+                    ? () =>
+                        this.props.addToCart(
+                          this.props.product.id,
+                          this.props.userId
+                        )
+                    : () => this.props.addToCart(this.props.product.id, 0)
                 }
               >
                 Add to Cart
@@ -90,7 +91,6 @@ export class SingleProduct extends React.Component {
         ) : (
           <p>Can't find that product - Check back later</p>
         )}
-
       </div>
     )
   }
@@ -101,9 +101,8 @@ const mapState = state => {
     product: state.product,
     displayEdit: false,
     userId: state.user.id,
-    isAdmin: state.user.isAdmin
+    isAdmin: state.user.isAdmin,
     isLoggedIn: !!state.user.id
-
   }
 }
 

@@ -65,8 +65,7 @@ router.post('/:userId/cart', async (req, res, next) => {
 
 router.put('/:userId/cart', async (req, res, next) => {
   try {
-    console.log('----->', req.params.userId)
-    const getCart = await Order.findOne({
+    let getCart = await Order.findOne({
       where: {
         userId: req.params.userId,
         inProgress: true
@@ -76,28 +75,46 @@ router.put('/:userId/cart', async (req, res, next) => {
       }
     })
 
-    const foundProduct = await Product.findByPk(req.body.id)
+    if (getCart === null) {
+      const user = await User.findByPk(req.params.userId)
+      getCart = await Order.create()
+      await getCart.setUser(user)
+    }
+
+    const foundProduct = await Product.findByPk(req.body.productId)
     const order = await getCart.addProduct(foundProduct)
+
+    getCart.totalPrice = getCart.totalPrice + foundProduct.price
+    await getCart.save()
+
     if (order === undefined) {
       getCart.products.forEach(async product => {
         if (product.id === foundProduct.id) {
           product.itemsInOrder.quantity = product.itemsInOrder.quantity + 1
           await product.itemsInOrder.save()
+          res.json(product).status(204)
+          return null
         }
       })
+    } else {
+      const newCart = await Order.findOne({
+        where: {
+          userId: req.params.userId,
+          inProgress: true
+        },
+        include: {
+          model: Product
+        }
+      })
+
+      newCart.products.forEach(product => {
+        if (product.id === foundProduct.id) {
+          res.json(product).status(204)
+          return null
+        }
+      })
+      console.log('bad thing happen')
     }
-    getCart.totalPrice = getCart.totalPrice + foundProduct.price
-    await getCart.save()
-    const newCart = await Order.findOne({
-      where: {
-        userId: req.params.userId,
-        inProgress: true
-      },
-      include: {
-        model: Product
-      }
-    })
-    res.json(newCart)
   } catch (error) {
     next(error)
   }
@@ -128,7 +145,7 @@ router.put('/:userId/cart-remove/', async (req, res, next) => {
 //find orders in progress
 router.get('/:userId/cart', async (req, res, next) => {
   try {
-    const getCart = await Order.findAll({
+    const getCart = await Order.findOne({
       where: {
         userId: req.params.userId,
         inProgress: true

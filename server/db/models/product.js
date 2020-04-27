@@ -9,19 +9,24 @@ const Product = db.define('product', {
   },
   name: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: false,
+    unique: true,
+    validate: {
+      notEmpty: true
+    }
   },
   imageUrl: {
-    type: Sequelize.STRING,
-    defaultValue: 'https://previews.123rf.com/images/larryrains/larryrains1903/larryrains190300054/120066912-trash-can-mascot-running-with-money-a-vector-cartoon-illustration-of-a-aluminum-trash-can-mascot-run.jpg',
+    type: Sequelize.TEXT,
+    defaultValue:
+      'https://previews.123rf.com/images/larryrains/larryrains1903/larryrains190300054/120066912-trash-can-mascot-running-with-money-a-vector-cartoon-illustration-of-a-aluminum-trash-can-mascot-run.jpg'
   },
   description: {
     type: Sequelize.TEXT
   },
   price: {
-    type: Sequelize.FLOAT,
+    type: Sequelize.INTEGER,
     allowNull: false
   }
 })
 
-module.exports = Product;
+module.exports = Product

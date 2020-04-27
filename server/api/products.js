@@ -18,7 +18,7 @@ router.post('/', async (req, res, next) => {
         id: `${req.user.id}`
       }
     })
-    if (user.isAdmin) {
+    if (req.user.isAdmin) {
       const newProduct = await Product.create(req.body)
       res.json(newProduct).status(202)
     }

@@ -39,7 +39,7 @@ export class SingleProduct extends React.Component {
       )
     }
     return (
-      <div>
+      <div className="singleProduct-cont">
         {this.props.product ? (
           <section className="singleProduct">
             <div className="singleProductLeftBox">

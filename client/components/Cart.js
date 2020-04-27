@@ -1,9 +1,14 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
-import {fetchCart, checkoutThunk} from '../store/cart'
+import {
+  MDBDropdown,
+  MDBDropdownToggle,
+  MDBDropdownMenu,
+  MDBDropdownItem
+} from 'mdbreact'
+import {fetchCart, checkoutThunk, removeProduct} from '../store/cart'
 import {me} from '../store'
-import {removeProduct} from '../store/cart'
 // Import Store Thunks
 
 export class Cart extends React.Component {
@@ -23,11 +28,12 @@ export class Cart extends React.Component {
   render() {
     return (
       <div className="cart">
+        <h2>Your Cart</h2>
         {this.props.cart && this.props.cart.length > 0 ? (
           this.props.cart.map(product => (
-            <div key={product.name} className="box-wrapper">
-              <Link to={`/products/${product.id}`}>{product.name}</Link>
+            <div key={product.name} className="cart-item-wrapper">
               <img src={product.imageUrl} />
+              <Link to={`/products/${product.id}`}>{product.name}</Link>
               <button
                 type="button"
                 onClick={() =>
@@ -36,8 +42,28 @@ export class Cart extends React.Component {
               >
                 Remove Item
               </button>
+              <div className="edit-quantity">
+                  <label htmlFor="quantity">Quantity:</label>
+                  <select
+                    name="item-quantity"
+                    id="quantity"
+                    value={product.itemsInOrder.quantity}
+                  >
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                  </select>
+                </div>
             </div>
           ))
+
         ) : (
           <p>Your cart is empty!</p>
         )}
@@ -87,3 +113,6 @@ const mapDispatch = dispatch => {
 }
 
 export default connect(mapState, mapDispatch)(Cart)
+
+// selected={this.props.optionState==this.value}
+// selected={product.itemsInOrder.quantity}

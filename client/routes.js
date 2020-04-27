@@ -23,33 +23,35 @@ class Routes extends Component {
     const {isLoggedIn, isAdmin} = this.props
 
     return (
-      <Switch>
-        {/* Routes placed here are available to all visitors */}
-        <Route path="/login" component={Login} />
-        <Route path="/signup" component={Signup} />
-        <Route exact path="/products" component={AllProducts} />
-        <Route
-          path="/products/:productId"
-          component={SingleProduct}
-          isAdmin={isAdmin}
-        />
-        <Route exact path="/cart" component={Cart} />
-        <Route exact path="/checkout" component={Checkout} />
-        {isLoggedIn && (
-          <Switch>
-            {/* Routes placed here are only available after logging in */}
-            <Route path="/home/:userId" component={UserHome} />
-            {isAdmin && (
-              <div>
-                <Route path="/users/:userId/allusers" component={AllUsers} />
-                <Route path="/products/add" component={AddProduct} />
-              </div>
-            )}
-          </Switch>
-        )}
-        {/* Displays our Login component as a fallback */}
-        <Route component={Login} />
-      </Switch>
+      <div className="product-cont">
+        <Switch>
+          {/* Routes placed here are available to all visitors */}
+          <Route path="/login" component={Login} />
+          <Route path="/signup" component={Signup} />
+          <Route exact path="/products" component={AllProducts} />
+          <Route
+            path="/products/:productId"
+            component={SingleProduct}
+            isAdmin={isAdmin}
+          />
+          <Route exact path="/cart" component={Cart} />
+          <Route exact path="/checkout" component={Checkout} />
+          {isLoggedIn && (
+            <Switch>
+              {/* Routes placed here are only available after logging in */}
+              <Route path="/home/:userId" component={UserHome} />
+              {isAdmin && (
+                <div>
+                  <Route path="/users/:userId/allusers" component={AllUsers} />
+                  <Route path="/products/add" component={AddProduct} />
+                </div>
+              )}
+            </Switch>
+          )}
+          {/* Displays our Login component as a fallback */}
+          <Route component={Login} />
+        </Switch>
+       </div>
     )
   }
 }

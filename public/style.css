@@ -1,5 +1,6 @@
 body {
   font-family: sans-serif;
+  margin: 0;
 }
 
 a {
@@ -10,9 +11,23 @@ label {
   display: block;
 }
 
+nav {
+  background-color: #434779;
+}
+
+#nav-bar-cont {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+#nav-bar-cont-left {
+  display: flex;
+  flex-direction: row;
+}
 nav a {
   display: inline-block;
   margin: 1em;
+  color: white;
 }
 
 form div {
@@ -23,4 +38,64 @@ form div {
 img {
   width: 100px;
   height: 100px;
+}
+.product-cont {
+  display: flex;
+  justify-content: center;
+}
+div .boxes {
+  display: flex;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  justify-content: space-around;
+  padding: 20px;
+}
+
+.box-wrapper {
+  min-width: 250px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: center;
+}
+
+.singleProduct-cont {
+  display: flex;
+  justify-content: center;
+}
+
+.singleProduct {
+  display: flex;
+  flex-direction: row;
+}
+
+.singleProductRightBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+.singleProduct-cont img {
+  width: 300px;
+  height: 300px;
+}
+
+.cart {
+  text-align: center;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.cart-item-wrapper {
+  padding: 5%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.checkout {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }

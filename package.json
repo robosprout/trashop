@@ -47,13 +47,15 @@
     "express": "^4.16.4",
     "express-session": "^1.15.1",
     "history": "^4.9.0",
+    "jsdom": "^16.2.2",
+    "mdbreact": "^4.25.6",
     "morgan": "^1.9.1",
     "passport": "^0.4.0",
     "passport-google-oauth": "^2.0.0",
     "pg": "^7.9.0",
     "pg-hstore": "^2.3.2",
     "prop-types": "^15.7.2",
-    "react": "^16.8.6",
+    "react": "^16.13.1",
     "react-dom": "^16.8.6",
     "react-redux": "^7.0.1",
     "react-router-dom": "^5.0.0",
@@ -61,7 +63,9 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "sequelize": "^5.3.1",
-    "socket.io": "^2.2.0"
+    "sinon": "^9.0.2",
+    "socket.io": "^2.2.0",
+    "wait-for-expect": "^3.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.4.3",
@@ -82,7 +86,7 @@
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
     "chai": "^4.2.0",
-    "enzyme": "^3.9.0",
+    "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.12.1",
     "eslint": "^5.16.0",
     "eslint-config-fullstack": "^6.0.0",
@@ -103,5 +107,13 @@
     "webpack": "^4.16.4",
     "webpack-cli": "^3.1.0",
     "yaml": "^1.6.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Blueberriez/TraShopper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Blueberriez/TraShopper/issues"
+  },
+  "homepage": "https://github.com/Blueberriez/TraShopper#readme"
 }

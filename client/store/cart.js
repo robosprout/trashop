@@ -143,8 +143,9 @@ export default function cartReducer(state = initialState, action) {
       } else {
         console.log('updating quant')
         const newCart = state.cart.map(product => {
+          const thruCheck = !!product.itemsInOrder
           if (product.id === action.product.id) {
-            if (!product.itemsInOrder) {
+            if (!thruCheck) {
               product.itemsInOrder = {}
               product.itemsInOrder.quantity = 2
             } else

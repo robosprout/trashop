@@ -6,110 +6,249 @@ async function seed() {
   console.log('db synced!')
   //10 users in users array, animals/simpsons at email.com/net with password 123
   const users = await Promise.all([
-    User.create({email: 'admin@email.com', password: '123', isAdmin: true}),
-    User.create({email: 'dog@email.com', password: '123'}),
-    User.create({email: 'cat@email.com', password: '123'}),
-    User.create({email: 'bear@email.com', password: '123'}),
-    User.create({email: 'pig@email.net', password: '123'}),
-    User.create({email: 'bart@email.net', password: '123'}),
-    User.create({email: 'lisa@email.net', password: '123'}),
-    User.create({email: 'homer@email.net', password: '123'}),
-    User.create({email: 'marge@email.net', password: '123'}),
-    User.create({email: 'maggie@email.net', password: '123'})
+    User.create({
+      username: 'bossman22',
+      email: 'admin@email.com',
+      password: '123',
+      isAdmin: true
+    }),
+    User.create({
+      username: 'notAdog1997',
+      email: 'dog@email.com',
+      password: '123'
+    }),
+    User.create({
+      username: 'aleisterMeowley47',
+      email: 'cat@email.com',
+      password: '123'
+    }),
+    User.create({
+      username: 'honeyboy400',
+      email: 'bear@email.com',
+      password: '123'
+    }),
+    User.create({
+      username: 'KoRnSkater666',
+      email: 'pig@email.net',
+      password: '123'
+    }),
+    User.create({
+      username: 'VirtualBart',
+      email: 'bart@email.net',
+      password: '123'
+    }),
+    User.create({
+      username: 'Veg4Life',
+      email: 'lisa@email.net',
+      password: '123'
+    }),
+    User.create({
+      username: 'AlexaDeleteAlexaDeleteDoh',
+      email: 'homer@email.net',
+      password: '123'
+    }),
+    User.create({
+      username: 'motherOfTheYear4',
+      email: 'marge@email.net',
+      password: '123'
+    }),
+    User.create({
+      username: 'aintyourbaby76',
+      email: 'maggie@email.net',
+      password: '123'
+    })
   ])
-  //15 items in products array, first 10 are 'trash', then 5 'car'
+  //
+  // let price =
+  //   Math.floor(Math.random() * 100000000) + Math.floor(Math.random() * 100)
+  // Product.create({
+  //   category: 'island',
+  //   name: island,
+  //   imageUrl: `/islandPhotos/${photoNum}.jpeg`,
+  //   price: price
+  // })
   const products = await Promise.all([
-    //10 trash products
     Product.create({
       category: 'trash',
-      name: 'sponge',
-      description: 'an old sponge',
+      name: '"Telescope"',
+      description: 'Are we alone in the universe?',
+      imageUrl: '/trash/11 telescope.JPG',
+      price: 16000
+    }),
+    Product.create({
+      category: 'trash',
+      name: '"In The Place That You Live"',
+      imageUrl: '/trash/1 in the place that you live.JPG',
       price: 9999
     }),
     Product.create({
       category: 'trash',
-      name: 'beercan',
-      description: 'old crusty beer',
+      name: '"The Ship"',
+      description: 'A ship of the imagination',
+      imageUrl: '/trash/2 the ship.JPG',
       price: 1700
     }),
     Product.create({
       category: 'trash',
-      name: 'used lollipops',
-      description: 'a beautiful collection of slightly used lollipops',
-      price: 895
+      name: '"Cup of Gold"',
+      description: 'The only way to enjoy the golden condiment',
+      imageUrl: '/trash/3 mustard.JPG',
+      price: 8900
     }),
     Product.create({
       category: 'trash',
-      name: 'oatmeal',
-      description: 'a bowl of rotting oatmeal',
-      price: 501
+      name: '"Vitamin Water"',
+      description: "There's enough for everyone",
+      imageUrl: '/trash/5 vitamin water.JPG',
+      price: 1100
     }),
     Product.create({
       category: 'trash',
-      name: 'lightbulb',
-      description: 'a burnt out lightbulb',
-      price: 4575
+      name: '"Untitled Large Can"',
+      description: 'Untitled Piece',
+      imageUrl: '/trash/6 untitled large can.JPG',
+      price: 4500
     }),
     Product.create({
       category: 'trash',
-      name: 'coffee grounds',
-      description: 'use coffee grounds',
-      price: 5999
+      name: '"Mother"',
+      imageUrl: '/trash/23 mother.JPG',
+      price: 70000
     }),
     Product.create({
       category: 'trash',
-      name: 'paintbrush',
-      description: 'old crusty paintbrush',
-      price: 2500
+      name: '"The Plantman Knows"',
+      description: 'He knows all',
+      imageUrl: '/trash/7 garden thing.JPG',
+      price: 9200
     }),
     Product.create({
       category: 'trash',
-      name: 'calendar',
-      description: '2008 calendar (slightly crusty)',
-      price: 707
+      name: '"Knowledge of the Eternal"',
+      imageUrl: '/trash/8 wood.JPG',
+      price: 11000
     }),
     Product.create({
       category: 'trash',
-      name: 'broken cup',
-      description: 'classy cup with a hole in the bottom',
-      price: 330
+      name: '"Puppy"',
+      imageUrl: '/trash/9 puppy.JPG',
+      price: 20000
     }),
     Product.create({
       category: 'trash',
-      name: 'empty box',
-      description: 'empty cardboard box (mildly crusty)',
-      price: 800
-    }),
-    //5 car products
-    Product.create({
-      category: 'car',
-      name: 'ferrari',
-      description: 'a fancy car',
-      price: 3000000
+      name: '"Motion"',
+      description: 'What moves a person is motion',
+      imageUrl: '/trash/26 wheel.JPG',
+      price: 140000
     }),
     Product.create({
-      category: 'car',
-      name: 'dolorean2',
-      description: 'a car from the future',
-      price: 5000000
+      category: 'trash',
+      name: '"The Perfect Heart"',
+      imageUrl: '/trash/27 the perfect heart.JPG',
+      price: 125000
     }),
     Product.create({
-      category: 'car',
-      name: '96 subaru',
-      description: 'a classic car',
-      price: 10000000
+      category: 'trash',
+      name: '"Fan in Bottle"',
+      imageUrl: '/trash/10 fan in bottle.JPG',
+      price: 25000
     }),
     Product.create({
-      category: 'car',
-      name: 'lamborgini',
-      description: 'a race car',
-      price: 50000000
+      category: 'trash',
+      name: '"Holding"',
+      imageUrl: '/trash/12 you holding.JPG',
+      price: 12000
     }),
     Product.create({
-      category: 'car',
-      name: 'model t',
-      description: 'an old car',
-      price: 50000000
+      category: 'trash',
+      name: '"Spaceship"',
+      imageUrl: '/trash/24 spaceship.JPG',
+      price: 95000
+    }),
+    Product.create({
+      category: 'trash',
+      name: '"Home"',
+      imageUrl: '/trash/13 home.JPG',
+      price: 6500
+    }),
+    Product.create({
+      category: 'trash',
+      name: '"Clock"',
+      description: 'Does anybody really know what time it is?',
+      imageUrl: '/trash/14 clock.JPG',
+      price: 7500
+    }),
+    Product.create({
+      category: 'trash',
+      name: '"A Dead Fish"',
+      description: 'A Dead Fish gains the power of observation',
+      imageUrl: '/trash/15 a dead fish.JPG',
+      price: 13500
+    }),
+    Product.create({
+      category: 'trash',
+      name: '"Jesus\'s Cup of Love"',
+      description: "There's enough for everyone",
+      imageUrl: '/trash/4 cup.JPG',
+      price: 5500
+    }),
+    Product.create({
+      category: 'trash',
+      name: '"Butterfly"',
+      description:
+        "Today's the day when I see clear, a tiny thread of smoke appears",
+      imageUrl: '/trash/16 butterfly.JPG',
+      price: 22500
+    }),
+    Product.create({
+      category: 'trash',
+      name: '"Lemming"',
+      imageUrl: '/trash/17 lemming.JPG',
+      price: 50000
+    }),
+    Product.create({
+      category: 'trash',
+      name: '"Patience"',
+      description: '',
+      imageUrl: '/trash/18 patience.JPG',
+      price: 40000
+    }),
+    Product.create({
+      category: 'trash',
+      name: '"Mento"',
+      imageUrl: '/trash/19.JPG',
+      price: 30000
+    }),
+    Product.create({
+      category: 'trash',
+      name: '"The Sphere"',
+      imageUrl: '/trash/20 sphere.JPG',
+      price: 50000
+    }),
+    Product.create({
+      category: 'trash',
+      name: '"Soldier"',
+      imageUrl: '/trash/21 soldier.JPG',
+      price: 70000
+    }),
+    Product.create({
+      category: 'trash',
+      name: '"Pipe"',
+      imageUrl: '/trash/22 pipe.JPG',
+      price: 45000
+    }),
+    Product.create({
+      category: 'trash',
+      name: '"Fifty Seven"',
+      imageUrl: '/trash/25 fiftyseven.JPG',
+      price: 40000
+    }),
+    Product.create({
+      category: 'trash',
+      name: '"Percussion"',
+      description: 'Fragility requires respect',
+      imageUrl: '/trash/28 percussion.JPG',
+      price: 280000
     })
   ])
   //uncomment lines below for islands

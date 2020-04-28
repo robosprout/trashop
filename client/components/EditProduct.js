@@ -7,11 +7,11 @@ export class EditProduct extends React.Component {
   constructor() {
     super()
     // this.state = {
-    //   category: this.props.category,
-    //   name: this.props.name,
-    //   imageUrl: this.props.imageUrl,
-    //   description: this.props.description,
-    //   price: this.props.price
+    //   category: this.props.product.category,
+    //   name: this.props.product.name,
+    //   imageUrl: this.props.product.imageUrl,
+    //   description: this.props.product.description,
+    //   price: this.props.product.price
     // }
     this.state = {
       category: '',
@@ -24,16 +24,16 @@ export class EditProduct extends React.Component {
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
-  // componentDidMount() {
-  //   this.setState({
-  //     category: this.props.category,
-  //     name: this.props.name,
-  //     imageUrl: this.props.imageUrl,
-  //     description: this.props.description,
-  //     price: this.props.price
-  //   })
-  //   console.log('props in compdidmount', this.props)
-  // }
+  componentDidMount() {
+    this.setState({
+      category: this.props.product.category,
+      name: this.props.product.name,
+      imageUrl: this.props.product.imageUrl,
+      description: this.props.product.description,
+      price: this.props.product.price
+    })
+    console.log('props in compdidmount', this.props)
+  }
   handleChange(event) {
     this.setState({
       [event.target.name]: event.target.value
@@ -65,6 +65,7 @@ export class EditProduct extends React.Component {
     //   this.setState({redirect: false});
     //   return <Redirect to="/products" />
     // }
+    console.log(this.state)
     return (
       <form onSubmit={this.handleSubmit}>
         {/* <label>Category:
@@ -114,7 +115,7 @@ export class EditProduct extends React.Component {
         <input
           name="price"
           type="text"
-          value={this.props.price}
+          value={this.state.price}
           onChange={this.handleChange}
         />
         <button type="submit" onClick={this.handleSubmit}>

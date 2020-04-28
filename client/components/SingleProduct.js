@@ -75,13 +75,6 @@ export class SingleProduct extends React.Component {
                 </button>
               )}
               {editForm}
-              {/* {isAdmin && (
-                <EditProduct
-                  update={this.props.updateProduct}
-                  product={this.props.product}
-                  id={this.props.product.id}
-                />
-              )} */}
             </div>
             <div className="singleProductRightBox">
               <h3>{this.props.product.name}</h3>

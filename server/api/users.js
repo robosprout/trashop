@@ -24,7 +24,7 @@ router.get('/:userId/allusers', async (req, res, next) => {
 //admin/logged in user can view single user profile
 router.get('/:userId', async (req, res, next) => {
   try {
-    if (req.user.id === req.params.userId || req.user.isAdmin) {
+    if (req.user.id === parseInt(req.params.userId, 10) || req.user.isAdmin) {
       const user = await User.findOne({
         // explicitly select only the id and email fields - even though
         // users' passwords are encrypted, it won't help if we just
@@ -42,9 +42,9 @@ router.get('/:userId', async (req, res, next) => {
 })
 
 //admin/logged in user can delete user
-router.delete(':userId', async (req, res, next) => {
+router.delete('/:userId', async (req, res, next) => {
   try {
-    if (req.user.id === req.params.userId || req.user.isAdmin) {
+    if (req.user.id === parseInt(req.params.userId, 10) || req.user.isAdmin) {
       const user = await User.findOne({
         where: {id: req.params.id}
       })
@@ -59,9 +59,9 @@ router.delete(':userId', async (req, res, next) => {
 })
 
 //admin/logged in users can update user info
-router.put(':userId', async (req, res, next) => {
+router.put('/:userId', async (req, res, next) => {
   try {
-    if (req.user.id === req.params.userId || req.user.isAdmin) {
+    if (req.user.id === parseInt(req.params.userId, 10) || req.user.isAdmin) {
       const user = await User.findOne({
         where: {id: req.params.id}
       })
@@ -80,7 +80,7 @@ router.put(':userId', async (req, res, next) => {
 
 router.get('/:userId/orders', async (req, res, next) => {
   try {
-    if (req.user.id === req.params.userId || req.user.isAdmin) {
+    if (req.user.id === parseInt(req.params.userId, 10) || req.user.isAdmin) {
       const getOrders = await Order.findAll({
         where: {
           userId: req.params.userId,
@@ -92,7 +92,7 @@ router.get('/:userId/orders', async (req, res, next) => {
       })
       res.json(getOrders)
     } else {
-        throw new Error("Whoops! Couldn't find that!")
+      throw new Error("Whoops! Couldn't find that!")
     }
   } catch (error) {
     next(error)
@@ -101,7 +101,7 @@ router.get('/:userId/orders', async (req, res, next) => {
 
 router.post('/:userId/cart', async (req, res, next) => {
   try {
-    if (req.user.id === req.params.userId) {
+    if (req.user.id === parseInt(req.params.userId, 10)) {
       const newCart = await Order.create()
       const user = await User.findByPk(req.params.userId)
       newCart.setUser(user)
@@ -116,43 +116,8 @@ router.post('/:userId/cart', async (req, res, next) => {
 
 router.put('/:userId/cart', async (req, res, next) => {
   try {
-    if (req.user.id === req.params.userId || req.user.isAdmin) {
-    let getCart = await Order.findOne({
-      where: {
-        userId: req.params.userId,
-        inProgress: true
-      },
-      include: {
-        model: Product
-      }
-    })
-
-    if (getCart === null) {
-      const user = await User.findByPk(req.params.userId)
-      getCart = await Order.create()
-      await getCart.setUser(user)
-    }
-
-    const foundProduct = await Product.findByPk(req.body.productId)
-    const order = await getCart.addProduct(foundProduct)
-
-    getCart.totalPrice = getCart.totalPrice + foundProduct.price
-    await getCart.save()
-
-    if (order === undefined) {
-      getCart.products.forEach(async product => {
-        if (product.id === foundProduct.id) {
-          product.itemsInOrder.quantity = product.itemsInOrder.quantity + 1
-          product.itemsInOrder.price = foundProduct.price
-          await product.itemsInOrder.save()
-          res.json(product).status(204)
-          return null
-        }
-      })
-    } else {
-      order[0].price = foundProduct.price
-      await order[0].save()
-      const newCart = await Order.findOne({
+    if (req.user.id === parseInt(req.params.userId, 10) || req.user.isAdmin) {
+      let getCart = await Order.findOne({
         where: {
           userId: req.params.userId,
           inProgress: true
@@ -161,13 +126,48 @@ router.put('/:userId/cart', async (req, res, next) => {
           model: Product
         }
       })
-      newCart.products.forEach(product => {
-        if (product.id === foundProduct.id) {
-          res.json(product).status(204)
-          return null
-        }
-      })
-    }
+
+      if (getCart === null) {
+        const user = await User.findByPk(req.params.userId)
+        getCart = await Order.create()
+        await getCart.setUser(user)
+      }
+
+      const foundProduct = await Product.findByPk(req.body.productId)
+      const order = await getCart.addProduct(foundProduct)
+
+      getCart.totalPrice = getCart.totalPrice + foundProduct.price
+      await getCart.save()
+
+      if (order === undefined) {
+        getCart.products.forEach(async product => {
+          if (product.id === foundProduct.id) {
+            product.itemsInOrder.quantity = product.itemsInOrder.quantity + 1
+            product.itemsInOrder.price = foundProduct.price
+            await product.itemsInOrder.save()
+            res.json(product).status(204)
+            return null
+          }
+        })
+      } else {
+        order[0].price = foundProduct.price
+        await order[0].save()
+        const newCart = await Order.findOne({
+          where: {
+            userId: req.params.userId,
+            inProgress: true
+          },
+          include: {
+            model: Product
+          }
+        })
+        newCart.products.forEach(product => {
+          if (product.id === foundProduct.id) {
+            res.json(product).status(204)
+            return null
+          }
+        })
+      }
     } else {
       throw new Error('Error updating cart')
     }
@@ -205,7 +205,7 @@ router.put('/:userId/cart-update', async (req, res, next) => {
 // remove product from cart
 router.put('/:userId/cart-remove/', async (req, res, next) => {
   try {
-    if (req.user.id === req.params.userId) {
+    if (req.user.id === parseInt(req.params.userId, 10)) {
       const getCart = await Order.findOne({
         where: {
           userId: req.params.userId,
@@ -232,7 +232,7 @@ router.put('/:userId/cart-remove/', async (req, res, next) => {
 //find orders in progress
 router.get('/:userId/cart', async (req, res, next) => {
   try {
-    if (req.user.id === req.params.userId || req.user.isAdmin) {
+    if (req.user.id === parseInt(req.params.userId, 10) || req.user.isAdmin) {
       const getCart = await Order.findOne({
         where: {
           userId: req.params.userId,
@@ -253,7 +253,7 @@ router.get('/:userId/cart', async (req, res, next) => {
 
 router.put('/:userId/checkout', async (req, res, next) => {
   try {
-    if (req.user.id === req.params.userId) {
+    if (req.user.id === parseInt(req.params.userId, 10)) {
       const order = await Order.findAll({
         where: {
           userId: req.params.userId,
@@ -286,6 +286,7 @@ router.post('/:userId/newGuestCart', async (req, res, next) => {
       console.log(addedProduct[0].quantity)
       console.log(guestCart[key].quantity)
       addedProduct[0].quantity = guestCart[key].quantity
+      addedProduct[0].price = foundProduct.price
       await addedProduct[0].save()
       newCart.totalPrice += foundProduct.price * guestCart[key].quantity
       await newCart.save()
@@ -325,9 +326,8 @@ router.post('/:userId/loggedInCart', async (req, res, next) => {
       for (let key in guestCart) {
         let foundProduct = await Product.findByPk(guestCart[key].id)
         const addedProduct = await newCart.addProduct(foundProduct)
-        console.log(addedProduct[0].quantity)
-        console.log(guestCart[key].quantity)
         addedProduct[0].quantity = guestCart[key].quantity
+        addedProduct[0].price = guestCart[key].price
         await addedProduct[0].save()
         newCart.totalPrice += foundProduct.price * guestCart[key].quantity
         await newCart.save()
@@ -353,11 +353,13 @@ router.post('/:userId/loggedInCart', async (req, res, next) => {
             if (product.id === foundProduct.id) {
               product.itemsInOrder.quantity =
                 product.itemsInOrder.quantity + guestCart[key].quantity
+              product.itemsInOrder.price = foundProduct.price
               await product.itemsInOrder.save()
             }
           })
         } else {
           addedProduct[0].quantity = guestCart[key].quantity
+          addedProduct[0].price = guestCart[key].price
           await addedProduct[0].save()
           console.log(addedProduct[0].quantity)
           console.log(guestCart[key].quantity)

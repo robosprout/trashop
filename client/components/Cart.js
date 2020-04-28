@@ -44,7 +44,12 @@ export class Cart extends React.Component {
                           this.props.userId,
                           product.itemsInOrder.quantity
                         )
-                    : () => this.props.removeFromCart(product.id)
+                    : () =>
+                        this.props.removeFromCart(
+                          product.id,
+                          0,
+                          product.quantity
+                        )
                 }
               >
                 Remove Item

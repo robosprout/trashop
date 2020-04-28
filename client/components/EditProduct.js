@@ -25,13 +25,15 @@ export class EditProduct extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this)
   }
   componentDidMount() {
-    this.setState({
-      category: this.props.product.category,
-      name: this.props.product.name,
-      imageUrl: this.props.product.imageUrl,
-      description: this.props.product.description,
-      price: this.props.product.price
-    })
+    if (this.props.product) {
+      this.setState({
+        // category: this.props.product.category,
+        name: this.props.product.name,
+        imageUrl: this.props.product.imageUrl,
+        description: this.props.product.description,
+        price: this.props.product.price
+      })
+    }
     console.log('props in compdidmount', this.props)
   }
   handleChange(event) {
@@ -57,7 +59,7 @@ export class EditProduct extends React.Component {
     //with history, I've gotten the page to reload with the below code
     //it refreshes the page which may not be ideal, so maybe we can
     //figure out another way eventually
-    window.location.href = `/products`
+    // window.location.href = `/products`
     // history.push('/products')
   }
   render() {

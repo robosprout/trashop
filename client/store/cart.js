@@ -153,16 +153,6 @@ export const fetchCart = (userId = 0) => {
   }
 }
 
-export const resetCart = () => {
-  return dispatch => {
-    try {
-      dispatch(setCart([], 0))
-    } catch (error) {
-      console.log(error)
-    }
-  }
-}
-
 export const checkoutThunk = (userId = 0, cartId = 0) => {
   return async dispatch => {
     try {

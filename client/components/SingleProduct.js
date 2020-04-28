@@ -84,8 +84,8 @@ export class SingleProduct extends React.Component {
             </div>
             <div className="singleProductRightBox">
               <h3>{this.props.product.name}</h3>
-              <p>{this.props.product.description}</p>
-              <p>{this.props.product.price}</p>
+              <p>{`Description: ${this.props.product.description}`}</p>
+              <p>{`Price: $${(this.props.product.price / 100).toFixed(2)}`}</p>
             </div>
           </section>
         ) : (

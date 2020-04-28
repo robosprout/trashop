@@ -87,7 +87,7 @@ export class Cart extends React.Component {
         )}
         {this.props.cart && this.props.cart.length > 0 ? (
           <div className="checkout">
-            <h3>Total: {this.props.price}</h3>
+            <h3>Total: {`$${(this.props.price / 100).toFixed(2)}`}</h3>
             <button
               type="button"
               onClick={() => this.props.checkout(this.props.userId)}
@@ -115,7 +115,6 @@ const mapState = state => {
 const mapDispatch = dispatch => {
   return {
     getCart: function(userId = 0) {
-      console.log(userId)
       dispatch(fetchCart(userId))
     },
     removeFromCart: function(productId, userId = 0, quantity = 1) {

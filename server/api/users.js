@@ -41,7 +41,8 @@ router.get('/:userId/orders', async (req, res, next) => {
   try {
     const getOrders = await Order.findAll({
       where: {
-        userId: req.params.userId
+        userId: req.params.userId,
+        inProgress: false
       },
       include: {
         model: Product
@@ -91,12 +92,15 @@ router.put('/:userId/cart', async (req, res, next) => {
       getCart.products.forEach(async product => {
         if (product.id === foundProduct.id) {
           product.itemsInOrder.quantity = product.itemsInOrder.quantity + 1
+          product.itemsInOrder.price = foundProduct.price
           await product.itemsInOrder.save()
           res.json(product).status(204)
           return null
         }
       })
     } else {
+      order[0].price = foundProduct.price
+      await order[0].save()
       const newCart = await Order.findOne({
         where: {
           userId: req.params.userId,
@@ -113,7 +117,6 @@ router.put('/:userId/cart', async (req, res, next) => {
           return null
         }
       })
-      console.log('bad thing happen')
     }
   } catch (error) {
     next(error)

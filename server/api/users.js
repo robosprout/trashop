@@ -158,9 +158,10 @@ router.put('/:userId/cart-remove/', async (req, res, next) => {
         model: Product
       }
     })
-    const foundProduct = await Product.findByPk(req.body.id)
+    const foundProduct = await Product.findByPk(req.body.productId)
     await getCart.removeProduct(foundProduct)
-    getCart.totalPrice = getCart.totalPrice - foundProduct.price
+    getCart.totalPrice =
+      getCart.totalPrice - foundProduct.price * req.body.quantity
     getCart.save()
     res.json(getCart)
   } catch (error) {

@@ -37,7 +37,11 @@ export class Cart extends React.Component {
               <button
                 type="button"
                 onClick={() =>
-                  this.props.removeFromCart(product.id, this.props.userId)
+                  this.props.removeFromCart(
+                    product.id,
+                    this.props.userId,
+                    product.itemsInOrder.quantity
+                  )
                 }
               >
                 Remove Item
@@ -114,8 +118,8 @@ const mapDispatch = dispatch => {
       console.log(userId)
       dispatch(fetchCart(userId))
     },
-    removeFromCart: function(productId, userId = 0) {
-      dispatch(removeProduct(productId, userId))
+    removeFromCart: function(productId, userId = 0, quantity = 1) {
+      dispatch(removeProduct(productId, userId, quantity))
     },
     loadInitialData() {
       dispatch(me())

@@ -1,12 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
-import {
-  MDBDropdown,
-  MDBDropdownToggle,
-  MDBDropdownMenu,
-  MDBDropdownItem
-} from 'mdbreact'
+
 import {
   fetchCart,
   checkoutThunk,
@@ -44,7 +39,11 @@ export class Cart extends React.Component {
                 onClick={
                   this.props.isLoggedIn
                     ? () =>
-                        this.props.removeFromCart(product.id, this.props.userId)
+                        this.props.removeFromCart(
+                          product.id,
+                          this.props.userId,
+                          product.itemsInOrder.quantity
+                        )
                     : () => this.props.removeFromCart(product.id)
                 }
               >
@@ -126,8 +125,8 @@ const mapDispatch = dispatch => {
       console.log(userId)
       dispatch(fetchCart(userId))
     },
-    removeFromCart: function(productId, userId = 0) {
-      dispatch(removeProduct(productId, userId))
+    removeFromCart: function(productId, userId = 0, quantity = 1) {
+      dispatch(removeProduct(productId, userId, quantity))
     },
     loadInitialData() {
       dispatch(me())

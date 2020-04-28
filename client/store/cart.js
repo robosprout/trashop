@@ -22,9 +22,10 @@ export const addToCart = (product, loggedIn) => ({
   loggedIn
 })
 
-export const removeFromCart = (product, loggedIn) => ({
+export const removeFromCart = (productId, quantity, loggedIn) => ({
   type: REMOVE_FROM_CART,
-  product,
+  productId,
+  quantity,
   loggedIn
 })
 
@@ -46,32 +47,12 @@ export const addProductToCart = (productId, userId = 0) => {
         const newProduct = await axios.put(`/api/users/${userId}/cart`, {
           productId: productId
         })
-        console.log(newProduct.data)
         dispatch(addToCart(newProduct.data, true))
-      } else {
-        const newProduct = await axios.get(`/api/products/${productId}`)
-        dispatch(addToCart(newProduct.data, false))
       }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-}
-
-export const removeProduct = (productId, userId = 0) => {
-  return async dispatch => {
-    try {
-      const foundProduct = await axios.get(`/api/products/${productId}`)
-      if (userId !== 0) {
-        const cart = await axios.get(`/api/users/${userId}/cart`)
-        await axios.put(`/api/users/${userId}/cart-remove`, foundProduct.data)
-        dispatch(removeFromCart(foundProduct.data), true)
-      } else {
-        const foundProductFromGuestCart = removeFromGuestCart(
-          foundProduct.data.id
-        )
-        dispatch(removeFromCart(foundProductFromGuestCart), false)
-      }
+      // else {
+      //   const newProduct = await axios.get(`/api/products/${productId}`)
+      //   dispatch(addToCart(newProduct.data, false))
+      // }
     } catch (error) {
       console.log(error)
     }
@@ -87,10 +68,29 @@ export const updateQuantityThunk = (productId, userId = 0, quantity) => {
           quantity: quantity
         })
 
-        dispatch(updateQuantity(productId, quantity, true))
+        dispatch(updateQuantity(productId, quantity))
       } else {
         updateQuantityGuestCart(productId, quantity)
-        dispatch(updateQuantity(productId, quantity, false))
+        dispatch(updateQuantity(productId, quantity))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
+
+export const removeProduct = (productId, userId = 0, quantity) => {
+  return async dispatch => {
+    try {
+      if (userId !== 0) {
+        await axios.put(`/api/users/${userId}/cart-remove`, {
+          productId: productId,
+          quantity: quantity
+        })
+        dispatch(removeFromCart(productId, quantity, true))
+      } else {
+        const foundProductFromGuestCart = removeFromGuestCart(productId)
+        dispatch(removeFromCart(productId, quantity, false))
       }
     } catch (error) {
       console.log(error)
@@ -114,6 +114,7 @@ export const fetchCart = (userId = 0) => {
         const guestCart = JSON.parse(localStorage.getItem('guestCart'))
         let guestCartArray = []
         let totalPrice = 0
+        // eslint-disable-next-line guard-for-in
         for (let key in guestCart) {
           guestCartArray.push(guestCart[key])
           totalPrice += guestCart[key].price * guestCart[key].quantity
@@ -202,28 +203,21 @@ export default function cartReducer(state = initialState, action) {
       }
     }
     case REMOVE_FROM_CART: {
-      let quantity
-      let newPrice
-      if (action.loggedIn) {
-        state.cart.forEach(product => {
-          if (product.id === action.product.id)
-            quantity = product.itemsInOrder.quantity
-        })
-        newPrice = state.price - action.product.price * quantity
-      } else {
-        state.cart.forEach(product => {
-          if (product.id === action.product.id) {
-            quantity = product.quantity
-          }
-        })
-        newPrice = state.price - action.product.price * quantity
-      }
+      let removedProduct
+      state.cart.forEach(product => {
+        if (product.id === action.productId) removedProduct = product
+      })
+      console.log(removedProduct)
+      const newPrice = state.price - removedProduct.price * action.quantity
       return {
         ...state,
-        cart: state.cart.filter(product => product.id !== action.product.id),
+        cart: state.cart.filter(product => product.id !== action.productId),
         price: newPrice
       }
       // return state.filter(product => product.id !== action.product.id);
+    }
+    case CHECKOUT: {
+      return initialState
     }
     case UPDATE_QUANTITY: {
       let change
@@ -253,9 +247,6 @@ export default function cartReducer(state = initialState, action) {
       const newPrice = state.price + price * change
 
       return {...state, cart: newCart, price: newPrice}
-    }
-    case CHECKOUT: {
-      return initialState
     }
     default:
       return state

@@ -1,6 +1,8 @@
+/* eslint-disable max-statements */
 /* eslint-disable complexity */
 import axios from 'axios'
 import history from '../history'
+import {removeFromGuestCart, updateQuantityGuestCart} from './guestHelper'
 
 const SET_CART = 'SET_CART'
 const ADD_TO_CART = 'ADD_TO_CART'
@@ -20,22 +22,49 @@ export const addToCart = (product, loggedIn) => ({
   loggedIn
 })
 
-export const removeFromCart = (productId, quantity) => ({
+export const removeFromCart = (productId, quantity, loggedIn) => ({
   type: REMOVE_FROM_CART,
   productId,
-  quantity
+  quantity,
+  loggedIn
 })
 
 export const checkout = () => ({
   type: CHECKOUT
 })
 
-export const updateQuantity = (productId, quantity) => ({
+export const updateQuantity = (productId, quantity, loggedIn) => ({
   type: UPDATE_QUANTITY,
   productId,
-  quantity
+  quantity,
+  loggedIn
 })
-
+// {guestCart: JSON.parse(localStorage.getItem('guestCart'))}
+export const guestCartToOrder = (method, userId) => {
+  return async dispatch => {
+    try {
+      let res
+      if (method === 'signup') {
+        res = await axios.post(`/api/users/${userId}/newGuestCart`, {
+          guestCart: JSON.parse(localStorage.getItem('guestCart'))
+        })
+      } else {
+        res = await axios.post(`/api/users/${userId}/loggedInCart`, {
+          guestCart: JSON.parse(localStorage.getItem('guestCart'))
+        })
+      }
+      localStorage.clear()
+      localStorage.setItem('guestCart', JSON.stringify({}))
+      // const res = await axios.get(`/api/users/${userId}/cart`)
+      if (res.data && res.data.id) {
+        console.log(res.data)
+        dispatch(setCart(res.data.products, res.data.totalPrice))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
 export const addProductToCart = (productId, userId = 0) => {
   return async dispatch => {
     try {
@@ -44,10 +73,11 @@ export const addProductToCart = (productId, userId = 0) => {
           productId: productId
         })
         dispatch(addToCart(newProduct.data, true))
-      } else {
-        const newProduct = await axios.get(`/api/products/${productId}`)
-        dispatch(addToCart(newProduct.data, false))
       }
+      // else {
+      //   const newProduct = await axios.get(`/api/products/${productId}`)
+      //   dispatch(addToCart(newProduct.data, false))
+      // }
     } catch (error) {
       console.log(error)
     }
@@ -63,9 +93,10 @@ export const updateQuantityThunk = (productId, userId = 0, quantity) => {
           quantity: quantity
         })
 
-        dispatch(updateQuantity(productId, quantity))
+        dispatch(updateQuantity(productId, quantity, true))
       } else {
-        dispatch(updateQuantity(productId, quantity))
+        updateQuantityGuestCart(productId, quantity)
+        dispatch(updateQuantity(productId, quantity, false))
       }
     } catch (error) {
       console.log(error)
@@ -81,9 +112,10 @@ export const removeProduct = (productId, userId = 0, quantity) => {
           productId: productId,
           quantity: quantity
         })
-        dispatch(removeFromCart(productId, quantity))
+        dispatch(removeFromCart(productId, quantity, true))
       } else {
-        dispatch(removeFromCart(productId, quantity))
+        const foundProductFromGuestCart = removeFromGuestCart(productId)
+        dispatch(removeFromCart(productId, quantity, false))
       }
     } catch (error) {
       console.log(error)
@@ -94,14 +126,26 @@ export const removeProduct = (productId, userId = 0, quantity) => {
 export const fetchCart = (userId = 0) => {
   return async dispatch => {
     try {
+      //logged in user
       if (userId !== 0) {
         const res = await axios.get(`/api/users/${userId}/cart`)
         if (res.data && res.data.id) {
           console.log(res.data)
           dispatch(setCart(res.data.products, res.data.totalPrice))
-        } else {
-          dispatch(setCart([], 0))
         }
+      } else {
+        //guest user
+        //turn localStorage(object) into array
+        const guestCart = JSON.parse(localStorage.getItem('guestCart'))
+        let guestCartArray = []
+        let totalPrice = 0
+        // eslint-disable-next-line guard-for-in
+        for (let key in guestCart) {
+          guestCartArray.push(guestCart[key])
+          totalPrice += guestCart[key].price * guestCart[key].quantity
+        }
+        console.log(guestCartArray, totalPrice)
+        dispatch(setCart(guestCartArray, totalPrice))
       }
     } catch (error) {
       console.log(error)
@@ -193,15 +237,30 @@ export default function cartReducer(state = initialState, action) {
     case UPDATE_QUANTITY: {
       let change
       let price
-      const newCart = state.cart.map(product => {
-        if (product.id === action.productId) {
-          change = action.quantity - product.itemsInOrder.quantity
-          price = product.price
-          product.itemsInOrder.quantity = action.quantity
-        }
-        return product
-      })
+      let newCart = []
+      if (action.loggedIn) {
+        newCart = state.cart.map(product => {
+          if (product.id === action.productId) {
+            change = action.quantity - product.itemsInOrder.quantity
+            price = product.price
+            product.itemsInOrder.quantity = action.quantity
+          }
+          return product
+        })
+      } else {
+        newCart = state.cart.map(product => {
+          if (product.id === action.productId) {
+            change = action.quantity - product.quantity
+            price = product.price
+            product.quantity = action.quantity
+          }
+          return product
+        })
+      }
+
+      console.log(newCart)
       const newPrice = state.price + price * change
+
       return {...state, cart: newCart, price: newPrice}
     }
     default:

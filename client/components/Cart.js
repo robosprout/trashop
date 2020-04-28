@@ -36,12 +36,15 @@ export class Cart extends React.Component {
               <Link to={`/products/${product.id}`}>{product.name}</Link>
               <button
                 type="button"
-                onClick={() =>
-                  this.props.removeFromCart(
-                    product.id,
-                    this.props.userId,
-                    product.itemsInOrder.quantity
-                  )
+                onClick={
+                  this.props.isLoggedIn
+                    ? () =>
+                        this.props.removeFromCart(
+                          product.id,
+                          this.props.userId,
+                          product.itemsInOrder.quantity
+                        )
+                    : () => this.props.removeFromCart(product.id)
                 }
               >
                 Remove Item
@@ -51,7 +54,11 @@ export class Cart extends React.Component {
                 <select
                   name="item-quantity"
                   id="quantity"
-                  value={product.itemsInOrder.quantity}
+                  value={
+                    this.props.isLoggedIn
+                      ? product.itemsInOrder.quantity
+                      : product.quantity
+                  }
                   onChange={
                     this.props.isLoggedIn
                       ? evt =>

@@ -29,3 +29,9 @@ export function updateQuantityGuestCart(productId, quantity) {
   localStorage.setItem('guestCart', JSON.stringify(guestCart))
   console.log('update ---->', JSON.parse(localStorage.getItem('guestCart')))
 }
+
+//helper function to determine if localStorage has items
+// export function getGuestCartLength(){
+//   const guestCart = JSON.parse(localStorage.getItem('guestCart'))
+//   console.log(Object.keys(guestCart).length);
+// }

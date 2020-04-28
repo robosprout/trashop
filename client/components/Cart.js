@@ -20,6 +20,7 @@ export class Cart extends React.Component {
     this.props.loadInitialData()
     if (this.props.isLoggedIn) {
       console.log('YOURE LOGGED IN')
+      this.props.getCart(this.props.userId)
     } else {
       this.props.getCart()
     }

@@ -36,12 +36,15 @@ export class Cart extends React.Component {
               <Link to={`/products/${product.id}`}>{product.name}</Link>
               <button
                 type="button"
-                onClick={() =>
-                  this.props.removeFromCart(
-                    product.id,
-                    this.props.userId,
-                    product.itemsInOrder.quantity
-                  )
+                onClick={
+                  this.props.isLoggedIn
+                    ? () =>
+                        this.props.removeFromCart(
+                          product.id,
+                          this.props.userId,
+                          product.itemsInOrder.quantity
+                        )
+                    : () => this.props.removeFromCart(product.id)
                 }
               >
                 Remove Item
@@ -51,7 +54,11 @@ export class Cart extends React.Component {
                 <select
                   name="item-quantity"
                   id="quantity"
-                  value={product.itemsInOrder.quantity}
+                  value={
+                    this.props.isLoggedIn
+                      ? product.itemsInOrder.quantity
+                      : product.quantity
+                  }
                   onChange={
                     this.props.isLoggedIn
                       ? evt =>
@@ -87,7 +94,7 @@ export class Cart extends React.Component {
         )}
         {this.props.cart && this.props.cart.length > 0 ? (
           <div className="checkout">
-            <h3>Total: {this.props.price}</h3>
+            <h3>Total: {`$${(this.props.price / 100).toFixed(2)}`}</h3>
             <button
               type="button"
               onClick={() => this.props.checkout(this.props.userId)}
@@ -115,7 +122,6 @@ const mapState = state => {
 const mapDispatch = dispatch => {
   return {
     getCart: function(userId = 0) {
-      console.log(userId)
       dispatch(fetchCart(userId))
     },
     removeFromCart: function(productId, userId = 0, quantity = 1) {

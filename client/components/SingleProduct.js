@@ -9,6 +9,7 @@ import {
 import {me} from '../store'
 import EditProduct from './EditProduct'
 import {addProductToCart, fetchCart} from '../store/cart'
+import {addToGuestCart} from '../store/guestHelper'
 
 export class SingleProduct extends React.Component {
   constructor() {
@@ -53,7 +54,7 @@ export class SingleProduct extends React.Component {
                           this.props.product.id,
                           this.props.userId
                         )
-                    : () => this.props.addToCart(this.props.product.id, 0)
+                    : () => addToGuestCart(this.props.product)
                 }
               >
                 Add to Cart
@@ -84,8 +85,8 @@ export class SingleProduct extends React.Component {
             </div>
             <div className="singleProductRightBox">
               <h3>{this.props.product.name}</h3>
-              <p>{this.props.product.description}</p>
-              <p>{this.props.product.price}</p>
+              <p>{`Description: ${this.props.product.description}`}</p>
+              <p>{`Price: $${(this.props.product.price / 100).toFixed(2)}`}</p>
             </div>
           </section>
         ) : (

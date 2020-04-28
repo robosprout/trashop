@@ -1,5 +1,8 @@
+/* eslint-disable max-statements */
+/* eslint-disable guard-for-in */
 const router = require('express').Router()
 const {User, Order, Product} = require('../db/models')
+
 module.exports = router
 
 //admin can see all users
@@ -80,7 +83,8 @@ router.get('/:userId/orders', async (req, res, next) => {
     if (req.user.id === req.params.userId || req.user.isAdmin) {
       const getOrders = await Order.findAll({
         where: {
-          userId: req.params.userId
+          userId: req.params.userId,
+          inProgress: false
         },
         include: {
           model: Product
@@ -88,7 +92,7 @@ router.get('/:userId/orders', async (req, res, next) => {
       })
       res.json(getOrders)
     } else {
-      throw new Error("Whoops! Couldn't find that!")
+        throw new Error("Whoops! Couldn't find that!")
     }
   } catch (error) {
     next(error)
@@ -112,8 +116,43 @@ router.post('/:userId/cart', async (req, res, next) => {
 
 router.put('/:userId/cart', async (req, res, next) => {
   try {
-    if (req.user.id === req.params.userId) {
-      let getCart = await Order.findOne({
+    if (req.user.id === req.params.userId || req.user.isAdmin) {
+    let getCart = await Order.findOne({
+      where: {
+        userId: req.params.userId,
+        inProgress: true
+      },
+      include: {
+        model: Product
+      }
+    })
+
+    if (getCart === null) {
+      const user = await User.findByPk(req.params.userId)
+      getCart = await Order.create()
+      await getCart.setUser(user)
+    }
+
+    const foundProduct = await Product.findByPk(req.body.productId)
+    const order = await getCart.addProduct(foundProduct)
+
+    getCart.totalPrice = getCart.totalPrice + foundProduct.price
+    await getCart.save()
+
+    if (order === undefined) {
+      getCart.products.forEach(async product => {
+        if (product.id === foundProduct.id) {
+          product.itemsInOrder.quantity = product.itemsInOrder.quantity + 1
+          product.itemsInOrder.price = foundProduct.price
+          await product.itemsInOrder.save()
+          res.json(product).status(204)
+          return null
+        }
+      })
+    } else {
+      order[0].price = foundProduct.price
+      await order[0].save()
+      const newCart = await Order.findOne({
         where: {
           userId: req.params.userId,
           inProgress: true
@@ -122,49 +161,15 @@ router.put('/:userId/cart', async (req, res, next) => {
           model: Product
         }
       })
-
-      if (getCart === null) {
-        const user = await User.findByPk(req.params.userId)
-        getCart = await Order.create()
-        await getCart.setUser(user)
-      }
-
-      const foundProduct = await Product.findByPk(req.body.productId)
-      const order = await getCart.addProduct(foundProduct)
-
-      getCart.totalPrice = getCart.totalPrice + foundProduct.price
-      await getCart.save()
-
-      if (order === undefined) {
-        getCart.products.forEach(async product => {
-          if (product.id === foundProduct.id) {
-            product.itemsInOrder.quantity = product.itemsInOrder.quantity + 1
-            await product.itemsInOrder.save()
-            res.json(product).status(204)
-            return null
-          }
-        })
-      } else {
-        const newCart = await Order.findOne({
-          where: {
-            userId: req.params.userId,
-            inProgress: true
-          },
-          include: {
-            model: Product
-          }
-        })
-
-        newCart.products.forEach(product => {
-          if (product.id === foundProduct.id) {
-            res.json(product).status(204)
-            return null
-          }
-        })
-        console.log('bad thing happen')
-      }
+      newCart.products.forEach(product => {
+        if (product.id === foundProduct.id) {
+          res.json(product).status(204)
+          return null
+        }
+      })
+    }
     } else {
-      throw new Error('Error Adding to Cart')
+      throw new Error('Error updating cart')
     }
   } catch (error) {
     next(error)
@@ -263,6 +268,114 @@ router.put('/:userId/checkout', async (req, res, next) => {
       res.sendStatus(204)
     } else {
       throw new Error('Error completing transaction, please try again!')
+    }
+  } catch (error) {
+    next(error)
+  }
+})
+
+router.post('/:userId/newGuestCart', async (req, res, next) => {
+  try {
+    const newCart = await Order.create()
+    const user = await User.findByPk(req.params.userId)
+    newCart.setUser(user)
+    const guestCart = req.body.guestCart
+    for (let key in guestCart) {
+      let foundProduct = await Product.findByPk(guestCart[key].id)
+      const addedProduct = await newCart.addProduct(foundProduct)
+      console.log(addedProduct[0].quantity)
+      console.log(guestCart[key].quantity)
+      addedProduct[0].quantity = guestCart[key].quantity
+      await addedProduct[0].save()
+      newCart.totalPrice += foundProduct.price * guestCart[key].quantity
+      await newCart.save()
+    }
+    await newCart.save()
+    const findCart = await Order.findOne({
+      where: {
+        userId: req.params.userId,
+        inProgress: true
+      },
+      include: {
+        model: Product
+      }
+    })
+    res.json(findCart)
+  } catch (error) {
+    next(error)
+  }
+})
+
+router.post('/:userId/loggedInCart', async (req, res, next) => {
+  try {
+    let newCart = await Order.findOne({
+      where: {
+        userId: req.params.userId,
+        inProgress: true
+      },
+      include: {
+        model: Product
+      }
+    })
+    if (!newCart) {
+      newCart = await Order.create()
+      const user = await User.findByPk(req.params.userId)
+      newCart.setUser(user)
+      const guestCart = req.body.guestCart
+      for (let key in guestCart) {
+        let foundProduct = await Product.findByPk(guestCart[key].id)
+        const addedProduct = await newCart.addProduct(foundProduct)
+        console.log(addedProduct[0].quantity)
+        console.log(guestCart[key].quantity)
+        addedProduct[0].quantity = guestCart[key].quantity
+        await addedProduct[0].save()
+        newCart.totalPrice += foundProduct.price * guestCart[key].quantity
+        await newCart.save()
+      }
+      await newCart.save()
+      const findCart = await Order.findOne({
+        where: {
+          userId: req.params.userId,
+          inProgress: true
+        },
+        include: {
+          model: Product
+        }
+      })
+      res.json(findCart)
+    } else {
+      const guestCart = req.body.guestCart
+      for (let key in guestCart) {
+        let foundProduct = await Product.findByPk(guestCart[key].id)
+        const addedProduct = await newCart.addProduct(foundProduct)
+        if (addedProduct === undefined) {
+          newCart.products.forEach(async product => {
+            if (product.id === foundProduct.id) {
+              product.itemsInOrder.quantity =
+                product.itemsInOrder.quantity + guestCart[key].quantity
+              await product.itemsInOrder.save()
+            }
+          })
+        } else {
+          addedProduct[0].quantity = guestCart[key].quantity
+          await addedProduct[0].save()
+          console.log(addedProduct[0].quantity)
+          console.log(guestCart[key].quantity)
+        }
+
+        newCart.totalPrice += foundProduct.price * guestCart[key].quantity
+        await newCart.save()
+      }
+      const findCart = await Order.findOne({
+        where: {
+          userId: req.params.userId,
+          inProgress: true
+        },
+        include: {
+          model: Product
+        }
+      })
+      res.json(findCart)
     }
   } catch (error) {
     next(error)

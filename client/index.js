@@ -8,6 +8,10 @@ import App from './app'
 
 // establishes socket connection
 import './socket'
+let cartList = {}
+if (!localStorage.getItem('guestCart')) {
+  localStorage.setItem('guestCart', JSON.stringify(cartList))
+}
 
 ReactDOM.render(
   <Provider store={store}>

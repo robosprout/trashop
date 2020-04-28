@@ -374,28 +374,37 @@ async function seed() {
     Order.create()
   ])
   //using the 'magic' addProducts method created by the many to many relationship
-  await orders[0].addProducts([
-    products[0],
-    products[1],
-    products[2],
-    products[8]
-  ])
+  let itemsInOrder1 = await orders[0].addProducts([products[0], products[1]])
+
+  itemsInOrder1[0].price = products[0].price
+  itemsInOrder1[1].price = products[1].price
+  await itemsInOrder1[0].save()
+  await itemsInOrder1[1].save()
   //using the 'magic' setUser method created by the one to one relationship between Cart and User
   await orders[0].setUser(users[0])
-  orders[0].totalPrice =
-    products[0].price +
-    products[1].price +
-    products[2].price +
-    products[8].price
+  orders[0].totalPrice = products[0].price + products[1].price
   await orders[0].save()
+
   //if this works like I think it should, now our user 'admin@email.com' will have one cart with 5 items in it
   //second order/cart
   // await orders[1].addProducts([products[3],[products[12], [products[1]])
-  await orders[1].addProducts([products[2], products[4], products[1]])
+  let itemsInOrder2 = await orders[1].addProducts([
+    products[2],
+    products[4],
+    products[1]
+  ])
   await orders[1].setUser(users[1])
   orders[1].totalPrice =
     products[2].price + products[4].price + products[1].price
   await orders[1].save()
+
+  itemsInOrder2[0].price = products[2].price
+  itemsInOrder2[1].price = products[4].price
+  itemsInOrder2[2].price = products[1].price
+  await itemsInOrder2[0].save()
+  await itemsInOrder2[1].save()
+  await itemsInOrder2[2].save()
+
   console.log(`seeded ${users.length} users`)
   console.log(`seeded successfully`)
 }

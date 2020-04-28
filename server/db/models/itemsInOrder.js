@@ -11,8 +11,9 @@ const ItemsInOrder = db.define('itemsInOrder', {
     defaultValue: 1
   },
   price: {
-    type: Sequelize.INTEGER
-    // allowNull: false
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    defaultValue: 0
   }
 })
 

@@ -7,13 +7,15 @@ import allUsersReducer from './allUsers'
 import allProductsReducer from './products'
 import singleProductReducer from './singleProduct'
 import cartReducer from './cart'
+import orderReducer from './orders'
 
 const reducer = combineReducers({
   user: userReducer,
   users: allUsersReducer,
   products: allProductsReducer,
   product: singleProductReducer,
-  basket: cartReducer
+  basket: cartReducer,
+  orders: orderReducer
 })
 
 const RESET_STORE = 'RESET_STORE'

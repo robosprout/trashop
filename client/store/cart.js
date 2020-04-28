@@ -228,8 +228,9 @@ export default function cartReducer(state = initialState, action) {
     case UPDATE_QUANTITY: {
       let change
       let price
+      let newCart = []
       if (action.loggedIn) {
-        const newCart = state.cart.map(product => {
+        newCart = state.cart.map(product => {
           if (product.id === action.productId) {
             change = action.quantity - product.itemsInOrder.quantity
             price = product.price
@@ -237,12 +238,8 @@ export default function cartReducer(state = initialState, action) {
           }
           return product
         })
-        console.log(newCart)
-        const newPrice = state.price + price * change
-
-        return {...state, cart: newCart, price: newPrice}
       } else {
-        const newCart = state.cart.map(product => {
+        newCart = state.cart.map(product => {
           if (product.id === action.productId) {
             change = action.quantity - product.quantity
             price = product.price
@@ -250,10 +247,12 @@ export default function cartReducer(state = initialState, action) {
           }
           return product
         })
-        const newPrice = state.price + price * change
-
-        return {...state, cart: newCart, price: newPrice}
       }
+
+      console.log(newCart)
+      const newPrice = state.price + price * change
+
+      return {...state, cart: newCart, price: newPrice}
     }
     case CHECKOUT: {
       return initialState

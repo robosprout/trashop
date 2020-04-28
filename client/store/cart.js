@@ -20,9 +20,10 @@ export const addToCart = (product, loggedIn) => ({
   loggedIn
 })
 
-export const removeFromCart = product => ({
+export const removeFromCart = (productId, quantity) => ({
   type: REMOVE_FROM_CART,
-  product
+  productId,
+  quantity
 })
 
 export const checkout = () => ({
@@ -72,16 +73,17 @@ export const updateQuantityThunk = (productId, userId = 0, quantity) => {
   }
 }
 
-export const removeProduct = (productId, userId = 0) => {
+export const removeProduct = (productId, userId = 0, quantity) => {
   return async dispatch => {
     try {
-      const foundProduct = await axios.get(`/api/products/${productId}`)
       if (userId !== 0) {
-        const cart = await axios.get(`/api/users/${userId}/cart`)
-        await axios.put(`/api/users/${userId}/cart-remove`, foundProduct.data)
-        dispatch(removeFromCart(foundProduct.data))
+        await axios.put(`/api/users/${userId}/cart-remove`, {
+          productId: productId,
+          quantity: quantity
+        })
+        dispatch(removeFromCart(productId, quantity))
       } else {
-        dispatch(removeFromCart(foundProduct.data))
+        dispatch(removeFromCart(productId, quantity))
       }
     } catch (error) {
       console.log(error)
@@ -182,15 +184,15 @@ export default function cartReducer(state = initialState, action) {
       }
     }
     case REMOVE_FROM_CART: {
-      let quantity
+      let removedProduct
       state.cart.forEach(product => {
-        if (product.id === action.product.id)
-          quantity = product.itemsInOrder.quantity
+        if (product.id === action.productId) removedProduct = product
       })
-      const newPrice = state.price - action.product.price * quantity
+      console.log(removedProduct)
+      const newPrice = state.price - removedProduct.price * action.quantity
       return {
         ...state,
-        cart: state.cart.filter(product => product.id !== action.product.id),
+        cart: state.cart.filter(product => product.id !== action.productId),
         price: newPrice
       }
       // return state.filter(product => product.id !== action.product.id);
@@ -209,7 +211,6 @@ export default function cartReducer(state = initialState, action) {
         }
         return product
       })
-      console.log(newCart)
       const newPrice = state.price + price * change
       return {...state, cart: newCart, price: newPrice}
     }

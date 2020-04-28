@@ -39,7 +39,32 @@ export const updateQuantity = (productId, quantity, loggedIn) => ({
   quantity,
   loggedIn
 })
-
+// {guestCart: JSON.parse(localStorage.getItem('guestCart'))}
+export const guestCartToOrder = (method, userId) => {
+  return async dispatch => {
+    try {
+      let res
+      if (method === 'signup') {
+        res = await axios.post(`/api/users/${userId}/newGuestCart`, {
+          guestCart: JSON.parse(localStorage.getItem('guestCart'))
+        })
+      } else {
+        res = await axios.post(`/api/users/${userId}/loggedInCart`, {
+          guestCart: JSON.parse(localStorage.getItem('guestCart'))
+        })
+      }
+      localStorage.clear()
+      localStorage.setItem('guestCart', JSON.stringify({}))
+      // const res = await axios.get(`/api/users/${userId}/cart`)
+      if (res.data && res.data.id) {
+        console.log(res.data)
+        dispatch(setCart(res.data.products, res.data.totalPrice))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
 export const addProductToCart = (productId, userId = 0) => {
   return async dispatch => {
     try {
@@ -68,10 +93,10 @@ export const updateQuantityThunk = (productId, userId = 0, quantity) => {
           quantity: quantity
         })
 
-        dispatch(updateQuantity(productId, quantity))
+        dispatch(updateQuantity(productId, quantity, true))
       } else {
         updateQuantityGuestCart(productId, quantity)
-        dispatch(updateQuantity(productId, quantity))
+        dispatch(updateQuantity(productId, quantity, false))
       }
     } catch (error) {
       console.log(error)

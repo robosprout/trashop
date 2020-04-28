@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import axios from 'axios'
 import history from '../history'
 
@@ -18,9 +19,10 @@ export const addToCart = (product, loggedIn) => ({
   loggedIn
 })
 
-export const removeFromCart = product => ({
+export const removeFromCart = (product, loggedIn) => ({
   type: REMOVE_FROM_CART,
-  product
+  product,
+  loggedIn
 })
 
 export const checkout = () => ({
@@ -53,16 +55,29 @@ export const removeProduct = (productId, userId = 0) => {
       if (userId !== 0) {
         const cart = await axios.get(`/api/users/${userId}/cart`)
         await axios.put(`/api/users/${userId}/cart-remove`, foundProduct.data)
-        dispatch(removeFromCart(foundProduct.data))
+        dispatch(removeFromCart(foundProduct.data), true)
       } else {
-        dispatch(removeFromCart(foundProduct.data))
+        const foundProductFromGuestCart = removeFromGuestCart(
+          foundProduct.data.id
+        )
+        dispatch(removeFromCart(foundProductFromGuestCart), false)
       }
     } catch (error) {
       console.log(error)
     }
   }
 }
+// helper function to remove items from localStorage
+function removeFromGuestCart(productId) {
+  const guestCart = JSON.parse(localStorage.getItem('guestCart'))
+  const removedProduct = guestCart[productId]
+  delete guestCart[productId]
+  localStorage.setItem('guestCart', JSON.stringify(guestCart))
+  console.log('remove ----->', JSON.parse(localStorage.getItem('guestCart')))
+  return removedProduct
+}
 
+function findProduct(product) {}
 export const fetchCart = (userId = 0) => {
   return async dispatch => {
     try {
@@ -168,11 +183,21 @@ export default function cartReducer(state = initialState, action) {
     }
     case REMOVE_FROM_CART: {
       let quantity
-      state.cart.forEach(product => {
-        if (product.id === action.product.id)
-          quantity = product.itemsInOrder.quantity
-      })
-      const newPrice = state.price - action.product.price * quantity
+      let newPrice
+      if (action.loggedIn) {
+        state.cart.forEach(product => {
+          if (product.id === action.product.id)
+            quantity = product.itemsInOrder.quantity
+        })
+        newPrice = state.price - action.product.price * quantity
+      } else {
+        state.cart.forEach(product => {
+          if (product.id === action.product.id) {
+            quantity = product.quantity
+          }
+        })
+        newPrice = state.price - action.product.price * quantity
+      }
       return {
         ...state,
         cart: state.cart.filter(product => product.id !== action.product.id),

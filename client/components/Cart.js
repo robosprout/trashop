@@ -36,36 +36,38 @@ export class Cart extends React.Component {
               <Link to={`/products/${product.id}`}>{product.name}</Link>
               <button
                 type="button"
-                onClick={() =>
-                  this.props.removeFromCart(product.id, this.props.userId)
+                onClick={
+                  this.props.isLoggedIn
+                    ? () =>
+                        this.props.removeFromCart(product.id, this.props.userId)
+                    : () => this.props.removeFromCart(product.id)
                 }
               >
                 Remove Item
               </button>
               <div className="edit-quantity">
-                  <label htmlFor="quantity">Quantity:</label>
-                  <select
-                    name="item-quantity"
-                    id="quantity"
-                    value={
-                      this.props.isLoggedIn ? product.itemsInOrder.quantity : 1
-                    }
-                  >
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                  </select>
-                </div>
+                <label htmlFor="quantity">Quantity:</label>
+                <select
+                  name="item-quantity"
+                  id="quantity"
+                  value={
+                    this.props.isLoggedIn ? product.itemsInOrder.quantity : 1
+                  }
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
             </div>
           ))
-
         ) : (
           <p>Your cart is empty!</p>
         )}
@@ -87,6 +89,12 @@ export class Cart extends React.Component {
   }
 }
 
+function removeFromGuestCart(productId) {
+  const guestCart = JSON.parse(localStorage.getItem('guestCart'))
+  delete guestCart[productId]
+  localStorage.setItem('guestCart', JSON.stringify(guestCart))
+  console.log('remove ----->', JSON.parse(localStorage.getItem('guestCart')))
+}
 const mapState = state => {
   return {
     cart: state.basket.cart,

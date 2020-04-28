@@ -20,7 +20,7 @@ const Navbar = ({handleClick, isLoggedIn, isAdmin, userId}) => (
             <a href="#" onClick={handleClick}>
               Logout
             </a>
-            {isAdmin && <Link to={`/${userId}/allUsers`}>All Users</Link>}
+            {isAdmin && <Link to={`/users/${userId}/allUsers`}>All Users</Link>}
           </div>
         ) : (
           <div id="user-auth-cont">

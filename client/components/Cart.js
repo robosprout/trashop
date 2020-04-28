@@ -1,13 +1,13 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
+
 import {
-  MDBDropdown,
-  MDBDropdownToggle,
-  MDBDropdownMenu,
-  MDBDropdownItem
-} from 'mdbreact'
-import {fetchCart, checkoutThunk, removeProduct} from '../store/cart'
+  fetchCart,
+  checkoutThunk,
+  removeProduct,
+  updateQuantityThunk
+} from '../store/cart'
 import {me} from '../store'
 // Import Store Thunks
 
@@ -37,35 +37,51 @@ export class Cart extends React.Component {
               <button
                 type="button"
                 onClick={() =>
-                  this.props.removeFromCart(product.id, this.props.userId)
+                  this.props.removeFromCart(
+                    product.id,
+                    this.props.userId,
+                    product.itemsInOrder.quantity
+                  )
                 }
               >
                 Remove Item
               </button>
               <div className="edit-quantity">
-                  <label htmlFor="quantity">Quantity:</label>
-                  <select
-                    name="item-quantity"
-                    id="quantity"
-                    value={
-                      this.props.isLoggedIn ? product.itemsInOrder.quantity : 1
-                    }
-                  >
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                  </select>
-                </div>
+                <label htmlFor="quantity">Quantity:</label>
+                <select
+                  name="item-quantity"
+                  id="quantity"
+                  value={product.itemsInOrder.quantity}
+                  onChange={
+                    this.props.isLoggedIn
+                      ? evt =>
+                          this.props.updateQuantity(
+                            product.id,
+                            this.props.userId,
+                            evt.target.value
+                          )
+                      : evt =>
+                          this.props.updateQuantity(
+                            product.id,
+                            0,
+                            evt.target.value
+                          )
+                  }
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
             </div>
           ))
-
         ) : (
           <p>Your cart is empty!</p>
         )}
@@ -102,14 +118,17 @@ const mapDispatch = dispatch => {
       console.log(userId)
       dispatch(fetchCart(userId))
     },
-    removeFromCart: function(productId, userId = 0) {
-      dispatch(removeProduct(productId, userId))
+    removeFromCart: function(productId, userId = 0, quantity = 1) {
+      dispatch(removeProduct(productId, userId, quantity))
     },
     loadInitialData() {
       dispatch(me())
     },
     checkout: function(id) {
       dispatch(checkoutThunk(id))
+    },
+    updateQuantity: function(productId, userId = 0, quantity) {
+      dispatch(updateQuantityThunk(productId, userId, quantity))
     }
   }
 }

@@ -171,6 +171,32 @@ router.put('/:userId/cart', async (req, res, next) => {
   }
 })
 
+router.put('/:userId/cart-update', async (req, res, next) => {
+  try {
+    const getCart = await Order.findOne({
+      where: {
+        userId: req.params.userId,
+        inProgress: true
+      },
+      include: {
+        model: Product
+      }
+    })
+
+    getCart.products.forEach(async product => {
+      if (product.id === req.body.productId) {
+        const oldQuant = product.itemsInOrder.quantity
+        const change = req.body.quantity - oldQuant
+        product.itemsInOrder.quantity = product.itemsInOrder.quantity + change
+        await product.itemsInOrder.save()
+        res.json(product.itemsInOrder.quantity).status(204)
+      }
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
 // remove product from cart
 router.put('/:userId/cart-remove/', async (req, res, next) => {
   try {
@@ -184,9 +210,10 @@ router.put('/:userId/cart-remove/', async (req, res, next) => {
           model: Product
         }
       })
-      const foundProduct = await Product.findByPk(req.body.id)
+      const foundProduct = await Product.findByPk(req.body.productId)
       await getCart.removeProduct(foundProduct)
-      getCart.totalPrice = getCart.totalPrice - foundProduct.price
+      getCart.totalPrice =
+        getCart.totalPrice - foundProduct.price * req.body.quantity
       getCart.save()
       res.json(getCart)
     } else {

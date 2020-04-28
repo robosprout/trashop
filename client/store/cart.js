@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import axios from 'axios'
 import history from '../history'
 
@@ -5,6 +6,7 @@ const SET_CART = 'SET_CART'
 const ADD_TO_CART = 'ADD_TO_CART'
 const CHECKOUT = 'CHECKOUT'
 const REMOVE_FROM_CART = 'REMOVE_FROM_CART'
+const UPDATE_QUANTITY = 'UPDATE_QUANTITY'
 
 export const setCart = (cart, price) => ({
   type: SET_CART,
@@ -18,13 +20,20 @@ export const addToCart = (product, loggedIn) => ({
   loggedIn
 })
 
-export const removeFromCart = product => ({
+export const removeFromCart = (productId, quantity) => ({
   type: REMOVE_FROM_CART,
-  product
+  productId,
+  quantity
 })
 
 export const checkout = () => ({
   type: CHECKOUT
+})
+
+export const updateQuantity = (productId, quantity) => ({
+  type: UPDATE_QUANTITY,
+  productId,
+  quantity
 })
 
 export const addProductToCart = (productId, userId = 0) => {
@@ -34,7 +43,6 @@ export const addProductToCart = (productId, userId = 0) => {
         const newProduct = await axios.put(`/api/users/${userId}/cart`, {
           productId: productId
         })
-        console.log(newProduct.data)
         dispatch(addToCart(newProduct.data, true))
       } else {
         const newProduct = await axios.get(`/api/products/${productId}`)
@@ -46,16 +54,36 @@ export const addProductToCart = (productId, userId = 0) => {
   }
 }
 
-export const removeProduct = (productId, userId = 0) => {
+export const updateQuantityThunk = (productId, userId = 0, quantity) => {
   return async dispatch => {
     try {
-      const foundProduct = await axios.get(`/api/products/${productId}`)
       if (userId !== 0) {
-        const cart = await axios.get(`/api/users/${userId}/cart`)
-        await axios.put(`/api/users/${userId}/cart-remove`, foundProduct.data)
-        dispatch(removeFromCart(foundProduct.data))
+        await axios.put(`/api/users/${userId}/cart-update`, {
+          productId: productId,
+          quantity: quantity
+        })
+
+        dispatch(updateQuantity(productId, quantity))
       } else {
-        dispatch(removeFromCart(foundProduct.data))
+        dispatch(updateQuantity(productId, quantity))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
+
+export const removeProduct = (productId, userId = 0, quantity) => {
+  return async dispatch => {
+    try {
+      if (userId !== 0) {
+        await axios.put(`/api/users/${userId}/cart-remove`, {
+          productId: productId,
+          quantity: quantity
+        })
+        dispatch(removeFromCart(productId, quantity))
+      } else {
+        dispatch(removeFromCart(productId, quantity))
       }
     } catch (error) {
       console.log(error)
@@ -156,21 +184,35 @@ export default function cartReducer(state = initialState, action) {
       }
     }
     case REMOVE_FROM_CART: {
-      let quantity
+      let removedProduct
       state.cart.forEach(product => {
-        if (product.id === action.product.id)
-          quantity = product.itemsInOrder.quantity
+        if (product.id === action.productId) removedProduct = product
       })
-      const newPrice = state.price - action.product.price * quantity
+      console.log(removedProduct)
+      const newPrice = state.price - removedProduct.price * action.quantity
       return {
         ...state,
-        cart: state.cart.filter(product => product.id !== action.product.id),
+        cart: state.cart.filter(product => product.id !== action.productId),
         price: newPrice
       }
       // return state.filter(product => product.id !== action.product.id);
     }
     case CHECKOUT: {
       return initialState
+    }
+    case UPDATE_QUANTITY: {
+      let change
+      let price
+      const newCart = state.cart.map(product => {
+        if (product.id === action.productId) {
+          change = action.quantity - product.itemsInOrder.quantity
+          price = product.price
+          product.itemsInOrder.quantity = action.quantity
+        }
+        return product
+      })
+      const newPrice = state.price + price * change
+      return {...state, cart: newCart, price: newPrice}
     }
     default:
       return state

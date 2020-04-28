@@ -36,8 +36,8 @@ form div {
 }
 
 img {
-  width: 100px;
-  height: 100px;
+  max-width: 60%;
+  /* min-width: 15%; */
 }
 .product-cont {
   display: flex;
@@ -54,7 +54,10 @@ div .boxes {
 .box-wrapper {
   min-width: 250px;
   min-height: 200px;
+  max-width: 375px;
+  /* max-height: 250px; */
   display: flex;
+  flex-basis: 33%;
   flex-direction: column-reverse;
   justify-content: center;
 }

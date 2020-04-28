@@ -2,11 +2,12 @@ const router = require('express').Router()
 const {User, Order, Product} = require('../db/models')
 module.exports = router
 
+//admin can see all users
 router.get('/:userId/allusers', async (req, res, next) => {
   try {
     if (req.user.isAdmin) {
       const allusers = await User.findAll({
-        attributes: ['id', 'email', 'isAdmin']
+        attributes: ['username', 'id', 'email', 'isAdmin']
       })
       res.json(allusers)
     } else {
@@ -17,19 +18,62 @@ router.get('/:userId/allusers', async (req, res, next) => {
   }
 })
 
-// router.get('/', async (req, res, next) => {
-//   try {
-//     const users = await User.findAll({
-//       // explicitly select only the id and email fields - even though
-//       // users' passwords are encrypted, it won't help if we just
-//       // send everything to anyone who asks!
-//       attributes: ['id', 'email', 'isAdmin']
-//     })
-//     res.json(users)
-//   } catch (err) {
-//     next(err)
-//   }
-// })
+//admin/logged in user can view single user profile
+router.get('/:userId', async (req, res, next) => {
+  try {
+    if (req.user.id === req.params.userId || req.user.isAdmin) {
+      const user = await User.findOne({
+        // explicitly select only the id and email fields - even though
+        // users' passwords are encrypted, it won't help if we just
+        // send everything to anyone who asks!
+        where: {id: req.params.userId},
+        attributes: ['id', 'email', 'isAdmin']
+      })
+      res.json(user)
+    } else {
+      throw new Error("Couldn't find that please try again")
+    }
+  } catch (err) {
+    next(err)
+  }
+})
+
+//admin/logged in user can delete user
+router.delete(':userId', async (req, res, next) => {
+  try {
+    if (req.user.id === req.params.userId || req.user.isAdmin) {
+      const user = await User.findOne({
+        where: {id: req.params.id}
+      })
+      user.destroy()
+      res.send('User Successfully Deleted').status(202)
+    } else {
+      throw new Error('Error deleting user')
+    }
+  } catch (err) {
+    next(err)
+  }
+})
+
+//admin/logged in users can update user info
+router.put(':userId', async (req, res, next) => {
+  try {
+    if (req.user.id === req.params.userId || req.user.isAdmin) {
+      const user = await User.findOne({
+        where: {id: req.params.id}
+      })
+      user.update({
+        username: req.body.username,
+        email: req.body.email,
+        imageUrl: req.body.imageUrl
+      })
+    }
+  } catch (err) {
+    next(err)
+  }
+})
+
+//Below is cart/order/checkout stuff
 
 router.get('/:userId/orders', async (req, res, next) => {
   try {

@@ -10,7 +10,7 @@ export class AllUsers extends React.Component {
   componentDidMount() {
     this.props.loadInitialData()
     if (this.props.isAdmin) {
-      this.props.getUsers(this.props.userId)
+      this.props.getUsers(this.props.match.params.userId)
     }
     // this.props.getUsers(1)
   }

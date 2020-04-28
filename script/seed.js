@@ -153,12 +153,12 @@ async function seed() {
       imageUrl: '/trash/10 fan in bottle.JPG',
       price: 25000
     }),
-    // Product.create({
-    //   category: 'trash',
-    //   name: '"You Holding?"',
-    //   imageUrl: '/trash/12 you holding.JPG',
-    //   price: 12000
-    // }),
+    Product.create({
+      category: 'trash',
+      name: '"Holding"',
+      imageUrl: '/trash/12 you holding.JPG',
+      price: 12000
+    }),
     Product.create({
       category: 'trash',
       name: '"Spaceship"',

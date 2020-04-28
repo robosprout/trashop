@@ -7,7 +7,12 @@ import {
   MDBDropdownMenu,
   MDBDropdownItem
 } from 'mdbreact'
-import {fetchCart, checkoutThunk, removeProduct} from '../store/cart'
+import {
+  fetchCart,
+  checkoutThunk,
+  removeProduct,
+  updateQuantityThunk
+} from '../store/cart'
 import {me} from '../store'
 // Import Store Thunks
 
@@ -51,7 +56,24 @@ export class Cart extends React.Component {
                   name="item-quantity"
                   id="quantity"
                   value={
-                    this.props.isLoggedIn ? product.itemsInOrder.quantity : 1
+                    this.props.isLoggedIn
+                      ? product.itemsInOrder.quantity
+                      : product.quantity
+                  }
+                  onChange={
+                    this.props.isLoggedIn
+                      ? evt =>
+                          this.props.updateQuantity(
+                            product.id,
+                            this.props.userId,
+                            evt.target.value
+                          )
+                      : evt =>
+                          this.props.updateQuantity(
+                            product.id,
+                            0,
+                            evt.target.value
+                          )
                   }
                 >
                   <option value="1">1</option>
@@ -118,6 +140,9 @@ const mapDispatch = dispatch => {
     },
     checkout: function(id) {
       dispatch(checkoutThunk(id))
+    },
+    updateQuantity: function(productId, userId = 0, quantity) {
+      dispatch(updateQuantityThunk(productId, userId, quantity))
     }
   }
 }

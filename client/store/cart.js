@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable complexity */
 import axios from 'axios'
 import history from '../history'
@@ -6,6 +7,7 @@ const SET_CART = 'SET_CART'
 const ADD_TO_CART = 'ADD_TO_CART'
 const CHECKOUT = 'CHECKOUT'
 const REMOVE_FROM_CART = 'REMOVE_FROM_CART'
+const UPDATE_QUANTITY = 'UPDATE_QUANTITY'
 
 export const setCart = (cart, price) => ({
   type: SET_CART,
@@ -27,6 +29,13 @@ export const removeFromCart = (product, loggedIn) => ({
 
 export const checkout = () => ({
   type: CHECKOUT
+})
+
+export const updateQuantity = (productId, quantity, loggedIn) => ({
+  type: UPDATE_QUANTITY,
+  productId,
+  quantity,
+  loggedIn
 })
 
 export const addProductToCart = (productId, userId = 0) => {
@@ -77,7 +86,33 @@ function removeFromGuestCart(productId) {
   return removedProduct
 }
 
-function findProduct(product) {}
+// helper function to update quantity from localStorage
+function updateQuantityGuestCart(productId, quantity) {
+  const guestCart = JSON.parse(localStorage.getItem('guestCart'))
+  guestCart[productId].quantity = quantity
+  localStorage.setItem('guestCart', JSON.stringify(guestCart))
+  console.log('update ---->', JSON.parse(localStorage.getItem('guestCart')))
+}
+export const updateQuantityThunk = (productId, userId = 0, quantity) => {
+  return async dispatch => {
+    try {
+      if (userId !== 0) {
+        await axios.put(`/api/users/${userId}/cart-update`, {
+          productId: productId,
+          quantity: quantity
+        })
+
+        dispatch(updateQuantity(productId, quantity, true))
+      } else {
+        updateQuantityGuestCart(productId, quantity)
+        dispatch(updateQuantity(productId, quantity, false))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+}
+
 export const fetchCart = (userId = 0) => {
   return async dispatch => {
     try {
@@ -204,6 +239,36 @@ export default function cartReducer(state = initialState, action) {
         price: newPrice
       }
       // return state.filter(product => product.id !== action.product.id);
+    }
+    case UPDATE_QUANTITY: {
+      let change
+      let price
+      if (action.loggedIn) {
+        const newCart = state.cart.map(product => {
+          if (product.id === action.productId) {
+            change = action.quantity - product.itemsInOrder.quantity
+            price = product.price
+            product.itemsInOrder.quantity = action.quantity
+          }
+          return product
+        })
+        console.log(newCart)
+        const newPrice = state.price + price * change
+
+        return {...state, cart: newCart, price: newPrice}
+      } else {
+        const newCart = state.cart.map(product => {
+          if (product.id === action.productId) {
+            change = action.quantity - product.quantity
+            price = product.price
+            product.quantity = action.quantity
+          }
+          return product
+        })
+        const newPrice = state.price + price * change
+
+        return {...state, cart: newCart, price: newPrice}
+      }
     }
     case CHECKOUT: {
       return initialState

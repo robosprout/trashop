@@ -9,6 +9,7 @@ import {
 import {me} from '../store'
 import EditProduct from './EditProduct'
 import {addProductToCart, fetchCart} from '../store/cart'
+import {addToGuestCart} from '../store/guestHelper'
 
 export class SingleProduct extends React.Component {
   constructor() {
@@ -96,18 +97,6 @@ export class SingleProduct extends React.Component {
   }
 }
 
-function addToGuestCart(product) {
-  const guestCart = JSON.parse(localStorage.getItem('guestCart'))
-  if (guestCart[product.id]) {
-    guestCart[product.id].quantity++
-  } else {
-    guestCart[product.id] = product
-    guestCart[product.id].quantity = 1
-  }
-
-  localStorage.setItem('guestCart', JSON.stringify(guestCart))
-  console.log('----->', JSON.parse(localStorage.getItem('guestCart')))
-}
 const mapState = state => {
   return {
     product: state.product,

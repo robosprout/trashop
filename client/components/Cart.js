@@ -111,12 +111,6 @@ export class Cart extends React.Component {
   }
 }
 
-function removeFromGuestCart(productId) {
-  const guestCart = JSON.parse(localStorage.getItem('guestCart'))
-  delete guestCart[productId]
-  localStorage.setItem('guestCart', JSON.stringify(guestCart))
-  console.log('remove ----->', JSON.parse(localStorage.getItem('guestCart')))
-}
 const mapState = state => {
   return {
     cart: state.basket.cart,

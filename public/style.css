@@ -96,9 +96,19 @@ div .boxes {
   justify-content: space-between;
 }
 
+.cart .cart-item-wrapper img {
+  width: 150px;
+  height: 150px;
+}
+
 .checkout {
   text-align: center;
   display: flex;
   justify-content: center;
   flex-direction: column;
+}
+
+.order-history .item-wrapper img {
+  width: 100px;
+  height: 100px;
 }

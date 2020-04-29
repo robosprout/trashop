@@ -22,7 +22,8 @@ export class AllUsers extends React.Component {
           {this.props.users.length > 0 ? (
             this.props.users.map(user => (
               <div key={user.email} className="box-wrapper">
-                <Link to={`/products/${user.id}`}>{user.email}</Link>
+                {/* <Link to={`/products/${user.id}`}>{user.email}</Link> */}
+                <a>{user.email}</a>
                 <img src={user.imageUrl} />
               </div>
             ))

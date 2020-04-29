@@ -34,26 +34,6 @@ export class Cart extends React.Component {
             <div key={product.name} className="cart-item-wrapper">
               <img src={product.imageUrl} />
               <Link to={`/products/${product.id}`}>{product.name}</Link>
-              <button
-                type="button"
-                onClick={
-                  this.props.isLoggedIn
-                    ? () =>
-                        this.props.removeFromCart(
-                          product.id,
-                          this.props.userId,
-                          product.itemsInOrder.quantity
-                        )
-                    : () =>
-                        this.props.removeFromCart(
-                          product.id,
-                          0,
-                          product.quantity
-                        )
-                }
-              >
-                Remove Item
-              </button>
               <div className="edit-quantity">
                 <label htmlFor="quantity">Quantity:</label>
                 <select
@@ -92,6 +72,26 @@ export class Cart extends React.Component {
                   <option value="10">10</option>
                 </select>
               </div>
+              <button
+                type="button"
+                onClick={
+                  this.props.isLoggedIn
+                    ? () =>
+                        this.props.removeFromCart(
+                          product.id,
+                          this.props.userId,
+                          product.itemsInOrder.quantity
+                        )
+                    : () =>
+                        this.props.removeFromCart(
+                          product.id,
+                          0,
+                          product.quantity
+                        )
+                }
+              >
+                Remove Item
+              </button>
             </div>
           ))
         ) : (

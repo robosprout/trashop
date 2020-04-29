@@ -161,6 +161,8 @@ export const checkoutThunk = (userId = 0, cartId = 0) => {
       }
       dispatch(checkout())
       history.push('/checkout')
+      localStorage.clear()
+      localStorage.setItem('guestCart', JSON.stringify({}))
     } catch (error) {
       console.log(error)
     }

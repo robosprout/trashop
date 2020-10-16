@@ -1496,7 +1496,7 @@ function (_Component) {
         path: "/products/add",
         component: _components_EditProduct__WEBPACK_IMPORTED_MODULE_8__["default"]
       }))), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["Route"], {
-        component: _components_AllProducts__WEBPACK_IMPORTED_MODULE_5__["default"]
+        component: _components__WEBPACK_IMPORTED_MODULE_4__["Login"]
       })));
     }
   }]);

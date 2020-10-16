@@ -10,3 +10,4 @@ Fork and clone this repo to your local machine
 -npm install
 -createdb trashop (or create a database called trashop in your preferred way)
 -npm run seed (To seed the database)
+-npm run start-dev

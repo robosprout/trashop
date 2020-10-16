@@ -29,6 +29,13 @@ export class Cart extends React.Component {
     return (
       <div className="cart">
         <h2>Your Cart</h2>
+        <button
+          type="button"
+          className="checkout-btn"
+          onClick={() => this.props.checkout(this.props.userId)}
+        >
+          Checkout
+        </button>
         {this.props.cart && this.props.cart.length > 0 ? (
           this.props.cart.map(product => (
             <div key={product.name} className="cart-item-wrapper">
@@ -109,6 +116,7 @@ export class Cart extends React.Component {
             <h3>Total: {`$${(this.props.price / 100).toFixed(2)}`}</h3>
             <button
               type="button"
+              className="checkout-btn"
               onClick={() => this.props.checkout(this.props.userId)}
             >
               Checkout

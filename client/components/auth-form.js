@@ -2,6 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import {auth} from '../store'
+import {Link} from 'react-router-dom'
 import {Cart} from './Cart'
 
 /**
@@ -11,8 +12,16 @@ const AuthForm = props => {
   const {name, displayName, handleSubmit, error} = props
 
   return (
-    <div>
-      <h4>Login or Continue as a Guest</h4>
+    <div id="auth-cont">
+      <h3>
+        Welcome to the TraShop! The Number One Shop for Ready-made Art and
+        Sculpture
+      </h3>
+
+      <h4>
+        Login or
+        <Link to="/products">Continue as a Guest</Link>
+      </h4>
       <form onSubmit={handleSubmit} name={name}>
         <div>
           <label htmlFor="email">
@@ -31,7 +40,9 @@ const AuthForm = props => {
         </div>
         {error && error.response && <div> {error.response.data} </div>}
       </form>
-      <a href="/auth/google">{displayName} with Google</a>
+      <a id="google-login-link" href="/auth/google">
+        {displayName} with Google
+      </a>
     </div>
   )
 }

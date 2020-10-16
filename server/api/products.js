@@ -44,7 +44,7 @@ router.put('/:id', async (req, res, next) => {
         id: `${req.user.id}`
       }
     })
-    console.log('USER>>>', user)
+    // console.log('USER>>>', user)
     if (user.isAdmin) {
       const product = await Product.findByPk(req.params.id)
       await product.update(req.body)

@@ -11,7 +11,7 @@ export const fetchUsers = userId => {
   return async dispatch => {
     try {
       const res = await axios.get(`/api/users/${userId}/allusers`)
-      console.log('THIS IS RES.DATA IN FETCHUSERS>>>', res.data)
+      // console.log('THIS IS RES.DATA IN FETCHUSERS>>>', res.data)
       // if (res.data[0]){
       dispatch(setUsers(res.data))
       // } else {

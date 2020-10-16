@@ -22,7 +22,7 @@ export class AllProducts extends React.Component {
   }
   render() {
     let editForm = null
-    const isAdmin = this.props
+    const {isAdmin} = this.props
     if (this.state.displayEdit) {
       editForm = <EditProduct />
     }
@@ -32,7 +32,13 @@ export class AllProducts extends React.Component {
           {this.props.products.length > 0 ? (
             this.props.products.map(product => (
               <div key={product.name} className="box-wrapper">
-                <Link to={`/products/${product.id}`}>{product.name}</Link>
+                {/* <p className="product-category">{product.category === 'trash' ?
+                'Artwork' : 'Island'}
+                </p> */}
+                <div className="name-and-price">
+                  <Link to={`/products/${product.id}`}>{product.name}</Link>
+                  <p>${product.price / 100}</p>
+                </div>
                 <img src={product.imageUrl} />
               </div>
             ))

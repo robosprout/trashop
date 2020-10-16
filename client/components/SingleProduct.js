@@ -16,7 +16,8 @@ export class SingleProduct extends React.Component {
     super()
     this.displayEditForm = this.displayEditForm.bind(this)
     this.state = {
-      displayEdit: false
+      displayEdit: false,
+      cartSuccess: null
     }
   }
   componentDidMount() {
@@ -26,6 +27,16 @@ export class SingleProduct extends React.Component {
   displayEditForm() {
     let currentBool = this.state.displayEdit
     this.setState({displayEdit: !currentBool})
+  }
+  addToCart() {
+    if (this.props.isLoggedIn) {
+      this.props.addToCart(this.props.product.id, this.props.userId)
+      this.setState({cartSuccess: 'Successfully added to Cart'})
+    } else {
+      addToGuestCart(this.props.product)
+      this.props.getCart()
+      this.setState({cartSuccess: 'Successfully added to Cart'})
+    }
   }
   render() {
     const {isAdmin, userId} = this.props
@@ -45,16 +56,28 @@ export class SingleProduct extends React.Component {
           <section className="singleProduct">
             <div className="singleProductLeftBox">
               <img src={this.props.product.imageUrl} />
+              {this.state.cartSuccess ? (
+                <div className="add-product-success fade-in">
+                  <p>{this.state.cartSuccess}</p>
+                  <Link to="/products">Keep Shopping?</Link>
+                  {` or `}
+                  <Link to="/cart">Checkout</Link>
+                </div>
+              ) : (
+                ''
+              )}
               <button
                 type="button"
+                className="add-to-cart-button"
                 onClick={
-                  this.props.isLoggedIn
-                    ? () =>
-                        this.props.addToCart(
-                          this.props.product.id,
-                          this.props.userId
-                        )
-                    : () => addToGuestCart(this.props.product)
+                  () => this.addToCart(this.props.product.id, this.props.userId)
+                  // this.props.isLoggedIn
+                  //   ? () =>
+                  //       this.props.addToCart(
+                  //         this.props.product.id,
+                  //         this.props.userId
+                  //       )
+                  //   : () => addToGuestCart(this.props.product)
                 }
               >
                 Add to Cart
@@ -78,7 +101,9 @@ export class SingleProduct extends React.Component {
             </div>
             <div className="singleProductRightBox">
               <h3>{this.props.product.name}</h3>
-              <p>{`Description: ${this.props.product.description}`}</p>
+              {this.props.product.description && (
+                <p>{`Description: ${this.props.product.description}`}</p>
+              )}
               <p>{`Price: $${(this.props.product.price / 100).toFixed(2)}`}</p>
             </div>
           </section>
@@ -115,6 +140,9 @@ const mapDispatch = dispatch => {
     updateProduct: function(id, product) {
       dispatch(updateProductThunk(id, product))
       dispatch(fetchProduct(id))
+    },
+    getCart: function(userId = 0) {
+      dispatch(fetchCart(userId))
     },
     loadInitialData() {
       dispatch(me())

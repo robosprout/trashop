@@ -14,15 +14,15 @@ class UserHome extends React.Component {
     // if (this.props.match.params.userId)
     //   this.props.getCart(this.props.match.params.userId)
     // req.session
-    console.log(this.props)
+    // console.log(this.props)
     this.props.loadInitialData()
     this.props.getOrders(this.props.userId)
-    console.log(this.props.orders)
+    // console.log(this.props.orders)
   }
 
   render() {
     return (
-      <div>
+      <div id="user-home-cont">
         <h2>Welcome, {this.props.email}</h2>
         <div className="order-history">
           <h2>Order History:</h2>
@@ -34,11 +34,15 @@ class UserHome extends React.Component {
                   {order.products.map(product => (
                     <div key={product.name} className="item-wrapper">
                       <img src={product.imageUrl} />
-                      <Link to={`/products/${product.id}`}>{product.name}</Link>
-                      <p>{`Price of item: $${(
-                        product.itemsInOrder.price / 100
-                      ).toFixed(2)}`}</p>
-                      <p>{`Quantity: ${product.itemsInOrder.quantity}`}</p>
+                      <div className="item-wrapper-right">
+                        <Link to={`/products/${product.id}`}>
+                          {product.name}
+                        </Link>
+                        <p>{`Price of item: $${(
+                          product.itemsInOrder.price / 100
+                        ).toFixed(2)}`}</p>
+                        <p>{`Quantity: ${product.itemsInOrder.quantity}`}</p>
+                      </div>
                     </div>
                   ))}
                   <h4>{`Total: $${(order.totalPrice / 100).toFixed(2)}`}</h4>
@@ -58,7 +62,7 @@ class UserHome extends React.Component {
  * CONTAINER
  */
 const mapState = state => {
-  console.log(state)
+  // console.log(state)
   return {
     email: state.user.email,
     userId: state.user.id,

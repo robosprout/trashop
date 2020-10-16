@@ -283,8 +283,8 @@ router.post('/:userId/newGuestCart', async (req, res, next) => {
     for (let key in guestCart) {
       let foundProduct = await Product.findByPk(guestCart[key].id)
       const addedProduct = await newCart.addProduct(foundProduct)
-      console.log(addedProduct[0].quantity)
-      console.log(guestCart[key].quantity)
+      // console.log(addedProduct[0].quantity)
+      // console.log(guestCart[key].quantity)
       addedProduct[0].quantity = guestCart[key].quantity
       addedProduct[0].price = foundProduct.price
       await addedProduct[0].save()
@@ -361,8 +361,8 @@ router.post('/:userId/loggedInCart', async (req, res, next) => {
           addedProduct[0].quantity = guestCart[key].quantity
           addedProduct[0].price = guestCart[key].price
           await addedProduct[0].save()
-          console.log(addedProduct[0].quantity)
-          console.log(guestCart[key].quantity)
+          // console.log(addedProduct[0].quantity)
+          // console.log(guestCart[key].quantity)
         }
 
         newCart.totalPrice += foundProduct.price * guestCart[key].quantity

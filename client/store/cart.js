@@ -57,7 +57,7 @@ export const guestCartToOrder = (method, userId) => {
       localStorage.setItem('guestCart', JSON.stringify({}))
       // const res = await axios.get(`/api/users/${userId}/cart`)
       if (res.data && res.data.id) {
-        console.log(res.data)
+        // console.log(res.data)
         dispatch(setCart(res.data.products, res.data.totalPrice))
       }
     } catch (error) {
@@ -130,7 +130,7 @@ export const fetchCart = (userId = 0) => {
       if (userId !== 0) {
         const res = await axios.get(`/api/users/${userId}/cart`)
         if (res.data && res.data.id) {
-          console.log(res.data)
+          // console.log(res.data)
           dispatch(setCart(res.data.products, res.data.totalPrice))
         }
       } else {
@@ -144,7 +144,7 @@ export const fetchCart = (userId = 0) => {
           guestCartArray.push(guestCart[key])
           totalPrice += guestCart[key].price * guestCart[key].quantity
         }
-        console.log(guestCartArray, totalPrice)
+        // console.log(guestCartArray, totalPrice)
         dispatch(setCart(guestCartArray, totalPrice))
       }
     } catch (error) {
@@ -185,7 +185,7 @@ export default function cartReducer(state = initialState, action) {
         if (product.id === action.product.id) newProduct = false
       })
       if (newProduct) {
-        console.log('adding product')
+        // console.log('adding product')
         if (action.loggedIn) {
           return {
             ...state,
@@ -202,7 +202,7 @@ export default function cartReducer(state = initialState, action) {
           }
         }
       } else {
-        console.log('updating quant')
+        // console.log('updating quant')
         let thruCheck = true
         const newCart = state.cart.map(product => {
           if (product.id === action.product.id) {
@@ -224,7 +224,7 @@ export default function cartReducer(state = initialState, action) {
       state.cart.forEach(product => {
         if (product.id === action.productId) removedProduct = product
       })
-      console.log(removedProduct)
+      // console.log(removedProduct)
       const newPrice = state.price - removedProduct.price * action.quantity
       return {
         ...state,
@@ -260,7 +260,7 @@ export default function cartReducer(state = initialState, action) {
         })
       }
 
-      console.log(newCart)
+      // console.log(newCart)
       const newPrice = state.price + price * change
 
       return {...state, cart: newCart, price: newPrice}

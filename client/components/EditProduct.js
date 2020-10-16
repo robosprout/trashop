@@ -34,13 +34,13 @@ export class EditProduct extends React.Component {
         price: this.props.product.price
       })
     }
-    console.log('props in compdidmount', this.props)
+    // console.log('props in compdidmount', this.props)
   }
   handleChange(event) {
     this.setState({
       [event.target.name]: event.target.value
     })
-    console.log('handlechangestate', this.state)
+    // console.log('handlechangestate', this.state)
   }
   handleSubmit = event => {
     event.preventDefault()
@@ -67,7 +67,7 @@ export class EditProduct extends React.Component {
     //   this.setState({redirect: false});
     //   return <Redirect to="/products" />
     // }
-    console.log(this.state)
+    // console.log(this.state)
     return (
       <form onSubmit={this.handleSubmit}>
         {/* <label>Category:

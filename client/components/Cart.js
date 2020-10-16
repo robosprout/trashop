@@ -16,10 +16,10 @@ export class Cart extends React.Component {
     // if (this.props.match.params.userId)
     //   this.props.getCart(this.props.match.params.userId)
     // req.session
-    console.log(this.props)
+
     this.props.loadInitialData()
     if (this.props.isLoggedIn) {
-      console.log('YOURE LOGGED IN')
+      // console.log('YOURE LOGGED IN')
     } else {
       this.props.getCart()
     }
@@ -32,66 +32,73 @@ export class Cart extends React.Component {
         {this.props.cart && this.props.cart.length > 0 ? (
           this.props.cart.map(product => (
             <div key={product.name} className="cart-item-wrapper">
-              <img src={product.imageUrl} />
-              <Link to={`/products/${product.id}`}>{product.name}</Link>
-              <div className="edit-quantity">
-                <label htmlFor="quantity">Quantity:</label>
-                <select
-                  name="item-quantity"
-                  id="quantity"
-                  value={
+              <div className="cart-item-wrapper-left">
+                <div className="cart-item-wrapper-left-top">
+                  <Link to={`/products/${product.id}`}>{product.name}</Link>
+                  <p>${product.price / 100}</p>
+                </div>
+                <img src={product.imageUrl} />
+              </div>
+              <div className="cart-item-wrapper-right">
+                <div className="edit-quantity">
+                  <label htmlFor="quantity">Quantity:</label>
+                  <select
+                    name="item-quantity"
+                    id="quantity"
+                    value={
+                      this.props.isLoggedIn
+                        ? product.itemsInOrder.quantity
+                        : product.quantity
+                    }
+                    onChange={
+                      this.props.isLoggedIn
+                        ? evt =>
+                            this.props.updateQuantity(
+                              product.id,
+                              this.props.userId,
+                              evt.target.value
+                            )
+                        : evt =>
+                            this.props.updateQuantity(
+                              product.id,
+                              0,
+                              evt.target.value
+                            )
+                    }
+                  >
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                  </select>
+                </div>
+                <button
+                  type="button"
+                  onClick={
                     this.props.isLoggedIn
-                      ? product.itemsInOrder.quantity
-                      : product.quantity
-                  }
-                  onChange={
-                    this.props.isLoggedIn
-                      ? evt =>
-                          this.props.updateQuantity(
+                      ? () =>
+                          this.props.removeFromCart(
                             product.id,
                             this.props.userId,
-                            evt.target.value
+                            product.itemsInOrder.quantity
                           )
-                      : evt =>
-                          this.props.updateQuantity(
+                      : () =>
+                          this.props.removeFromCart(
                             product.id,
                             0,
-                            evt.target.value
+                            product.quantity
                           )
                   }
                 >
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                </select>
+                  Remove
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={
-                  this.props.isLoggedIn
-                    ? () =>
-                        this.props.removeFromCart(
-                          product.id,
-                          this.props.userId,
-                          product.itemsInOrder.quantity
-                        )
-                    : () =>
-                        this.props.removeFromCart(
-                          product.id,
-                          0,
-                          product.quantity
-                        )
-                }
-              >
-                Remove Item
-              </button>
             </div>
           ))
         ) : (
